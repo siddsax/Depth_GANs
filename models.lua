@@ -1,9 +1,11 @@
 require 'nngraph'
+-- nngraph.setDebug(true)
 
 function defineG_encoder_decoder(input_nc, output_nc, ngf)
     local netG = nil 
-    -- input is (nc) x 256 x 256
-    local e1 = - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
+    local e0 = - nn.SpatialConvolution(input_nc, input_nc, 2, 1, 1, 1, 0, 0)
+    -- -- input is (nc) x 256 x 256
+    local e1 = e0 - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
     -- input is (ngf) x 128 x 128
     local e2 = e1 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf, ngf * 2, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 2)
     -- input is (ngf * 2) x 64 x 64
@@ -39,13 +41,26 @@ function defineG_encoder_decoder(input_nc, output_nc, ngf)
     
     local o1 = d8 - nn.Tanh()
     
-    netG = nn.gModule({e1},{o1})
+    netG = nn.gModule({e0},{o1})
 
     return netG
 end
 
 function defineG_unet(input_nc, output_nc, ngf)
     local netG = nil
+    -- input is (ngf) x 100 x 100
+    local n1 = - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
+    -- input is (ngf) x 50 x 50
+    local n2 = n1 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf, ngf * 2, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 2)
+    -- input is (ngf * 2) x 25 x 25
+    local n3 = n2 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 2, ngf * 4, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 4)
+    -- input is (ngf * 4) x 12 x 12
+    local n4 = n3 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 4, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 8) x 6 x 6
+    local n5 = n4 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 8) x 3 x 3
+    local n6 = n5 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+
     -- input is (nc) x 256 x 256
     local e1 = - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
     -- input is (ngf) x 128 x 128
@@ -63,8 +78,12 @@ function defineG_unet(input_nc, output_nc, ngf)
     -- input is (ngf * 8) x 2 x 2
     local e8 = e7 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 1 x 1
-    
-    local d1_ = e8 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+
+
+    local ne = {n6,e8} - nn.JoinTable(2)
+    -- local ne = {n6,e8} - nn.CAddTable()
+
+    local d1_ = ne - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8*2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 2 x 2
     local d1 = {d1_,e7} - nn.JoinTable(2)
     local d2_ = d1 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
@@ -87,13 +106,11 @@ function defineG_unet(input_nc, output_nc, ngf)
     local d7 = {d7_,e1} - nn.JoinTable(2)
     local d8 = d7 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 2, output_nc, 4, 4, 2, 2, 1, 1)
     -- input is (nc) x 256 x 256
-    
+
     local o1 = d8 - nn.Tanh()
-    
-    netG = nn.gModule({e1},{o1})
-    
-    --graph.dot(netG.fg,'netG')
-    
+    netG = nn.gModule({n1,e1},{o1})
+    -- graph.dot(netG.fg, 'graph', 'graph')
+
     return netG
 end
 

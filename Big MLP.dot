@@ -1,0 +1,91 @@
+digraph G {
+	graph [bb="0,0,614,1154"];
+	node [label="\N",
+		shape=oval
+	];
+	n1	 [height=1.3356,
+		label="Node1\ninput = {Tensor[1]}\lmodule = nn.Sigmoid\lreverseMap = {}",
+		pos="212,180",
+		tooltip="[[C]]:-1_",
+		width=2.6788];
+	n2	 [height=1.3356,
+		label="Node2\ninput = {Tensor[1],Tensor[1]}\lmapindex = {Node1,Node3}\lreverseMap = {}",
+		pos="314,48",
+		tooltip="[[C]]:-1_",
+		width=3.6126];
+	n1 -> n2	 [pos="e,278.46,94.297 246.53,134.99 254.73,124.54 263.56,113.28 272.05,102.46"];
+	n3	 [height=1.3356,
+		label="Node3\ninput = {Tensor[1]}\lmodule = nn.Tanh\lreverseMap = {}",
+		pos="417,180",
+		tooltip="[[C]]:-1_",
+		width=2.4834];
+	n3 -> n2	 [pos="e,350.08,94.535 382.42,135.35 374.04,124.78 365,113.37 356.32,102.42"];
+	n4	 [height=1.6303,
+		label="Node4\ninput = {Tensor[1],Tensor[1]}\lmodule = nn.CAddTable\lreverseMap = {}\lmapindex = {Node5,Node6}",
+		pos="314,323",
+		tooltip="[[C]]:-1_",
+		width=3.6126];
+	n4 -> n1	 [pos="e,244.21,225.53 274.27,267.08 266.34,256.11 258.02,244.62 250.14,233.72"];
+	n4 -> n3	 [pos="e,384.79,225.09 354.12,267.08 362.22,255.99 370.72,244.36 378.75,233.36"];
+	n5	 [height=1.3356,
+		label="Node5\ninput = {Tensor[20]}\lmodule = nn.Linear(20 -> 1)\lreverseMap = {}",
+		pos="180,466",
+		tooltip="[[C]]:-1_",
+		width=3.4507];
+	n5 -> n4	 [pos="e,263.44,377.21 222.4,420.39 233.19,409.03 244.98,396.63 256.39,384.62"];
+	n6	 [height=1.3356,
+		label="Node6\ninput = {Tensor[10]}\lmodule = nn.Linear(10 -> 1)\lreverseMap = {}",
+		pos="448,466",
+		tooltip="[[C]]:-1_",
+		width=3.4507];
+	n6 -> n4	 [pos="e,364.56,377.21 405.6,420.39 394.81,409.03 383.02,396.63 371.61,384.62"];
+	n7	 [height=1.3356,
+		label="Node7\ninput = {Tensor[20]}\lmodule = nn.Tanh\lreverseMap = {}",
+		pos="178,598",
+		tooltip="[[C]]:-1_",
+		width=2.6216];
+	n7 -> n5	 [pos="e,179.27,514.48 178.73,549.7 178.85,541.54 178.98,532.99 179.11,524.6"];
+	n8	 [height=1.3356,
+		label="Node8\ninput = {Tensor[10]}\lmodule = nn.Tanh\lreverseMap = {}",
+		pos="452,598",
+		tooltip="[[C]]:-1_",
+		width=2.6216];
+	n8 -> n6	 [pos="e,449.46,514.48 450.54,549.7 450.29,541.54 450.03,532.99 449.77,524.6"];
+	n9	 [height=1.3356,
+		label="Node9\ninput = {Tensor[20]}\lmodule = nn.Linear(20 -> 20)\lreverseMap = {}",
+		pos="169,730",
+		tooltip="[[C]]:-1_",
+		width=3.5652];
+	n9 -> n7	 [pos="e,174.71,646.48 172.27,681.7 172.84,673.54 173.43,664.99 174.01,656.6"];
+	n10	 [height=1.3356,
+		label="Node10\ninput = {Tensor[10]}\lmodule = nn.Linear(10 -> 10)\lreverseMap = {}",
+		pos="454,730",
+		tooltip="[[C]]:-1_",
+		width=3.5652];
+	n10 -> n8	 [pos="e,452.73,646.48 453.27,681.7 453.15,673.54 453.02,664.99 452.89,656.6"];
+	n11	 [height=1.3356,
+		label="Node11\ninput = {{Tensor[20],Tensor[10]}}\lselectindex = 1\lreverseMap = {}",
+		pos="149,862",
+		tooltip="[[C]]:-1_-1",
+		width=4.1417];
+	n11 -> n9	 [pos="e,161.76,778.05 156.28,813.7 157.56,805.35 158.91,796.58 160.23,788"];
+	n12	 [height=1.3356,
+		label="Node12\ninput = {{Tensor[20],Tensor[10]}}\lselectindex = 2\lreverseMap = {}",
+		pos="465,862",
+		tooltip="[[C]]:-1_-2",
+		width=4.1417];
+	n12 -> n10	 [pos="e,458.02,778.48 461,813.7 460.31,805.54 459.58,796.99 458.87,788.6"];
+	n13	 [height=1.3356,
+		label="Node13\ninput = {{Tensor[20],Tensor[10]}}\lreverseMap = {}\lnSplitOutputs = 2",
+		pos="307,994",
+		tooltip="[[C]]:-1_ split at [...ddhartha/torch/install/share/lua/5.1/nngraph/gmodule.lua]:96-mnode",
+		width=4.1417];
+	n13 -> n11	 [pos="e,202.44,906.97 253.51,948.99 239.61,937.55 224.53,925.15 210.27,913.41"];
+	n13 -> n12	 [pos="e,411.56,906.97 360.49,948.99 374.39,937.55 389.47,925.15 403.73,913.41"];
+	n14	 [height=1.041,
+		label="Node14\ninput = {Tensor[20],Tensor[10]}\lreverseMap = {}",
+		pos="307,1116",
+		tooltip="[[C]]:-1_",
+		width=3.8653];
+	n14 -> n13	 [pos="e,307,1042.5 307,1078.3 307,1070.2 307,1061.4 307,1052.7"];
+}

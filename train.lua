@@ -9,6 +9,8 @@ require 'optim'
 util = paths.dofile('util/util.lua')
 require 'image'
 require 'models'
+require 'distributions'
+nngraph.setDebug(true)
 
 
 opt = {
@@ -49,7 +51,7 @@ opt = {
    which_model_netD = 'basic', -- selects model to use for netD
    which_model_netG = 'unet',  -- selects model to use for netG
    n_layers_D = 0,             -- only used if which_model_netD=='n_layers'
-   lambda = 100,               -- weight on L1 term in objective
+   lambda = 1000,               -- weight on L1 term in objective INITIAL = 100
 }
 
 -- one-line argument parser. parses enviroment variables to override the defaults
@@ -177,7 +179,7 @@ optimStateD = {
 }
 ----------------------------------------------------------------------------
 --   a tensor for 'batchSize' number of images with input_nc channels which is used to condition the gans (fineSize)X(fineSize)
-local real_A = torch.Tensor(opt.batchSize, input_nc, opt.fineSize, opt.fineSize)
+local real_A = torch.Tensor(opt.batchSize, input_nc, opt.fineSize, opt.fineSize) 
 --  a tensor for 'batchSize' number of images which are the real structured images.
 local real_B = torch.Tensor(opt.batchSize, output_nc, opt.fineSize, opt.fineSize)
 --  a tensor for 'batchSize' number of output images which aims to produce image like real_B using real_A
@@ -232,16 +234,35 @@ function createRealFake()
     else
         real_AB = real_B -- unconditional GAN, only penalizes structure in B
     end
-    
+    mu = torch.zeros(100)
+    sigma = 100*torch.eye(100)
+    n = torch.zeros(1,3,100,100)
+    -- real_A = torch.zeros(1,3,256,256)
+
+    local i = 1
+    while i<101 do
+      sample_1 = distributions.mvn.rnd(mu, sigma) -- a 
+      sample_2 = distributions.mvn.rnd(mu, sigma) -- a 
+      sample_3 = distributions.mvn.rnd(mu, sigma) -- a 
+      n[{1,1,{1,100},i}] = sample_1
+      n[{1,2,{1,100},i}] = sample_2
+      n[{1,3,{1,100},i}] = sample_3
+      i = i + 1
+    end
+    -- print(real_A:size())
+    if opt.gpu>0 then 
+      n = n:cuda();
+    end
+    -- print(sample:size())
     -- created fake using real_A as input
-    fake_B = netG:forward(real_A)
-    
+    fake_B = netG:forward({n, real_A})
+    -- k = netG:forward({n,real_A})
     if opt.condition_GAN==1 then
         fake_AB = torch.cat(real_A,fake_B,2)
     else
         fake_AB = fake_B -- unconditional GAN, only penalizes structure in B
     end
-    local predict_real = netD:forward(real_AB)
+    local predict_real = netD:forward(real_AB)  
     local predict_fake = netD:forward(fake_AB)
 end
 

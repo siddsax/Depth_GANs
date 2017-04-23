@@ -9,8 +9,8 @@ require 'optim'
 util = paths.dofile('util/util.lua')
 require 'image'
 require 'models'
-require 'distributions'
-nngraph.setDebug(true)
+-- require 'distributions'
+-- nngraph.setDebug(true)
 
 
 opt = {
@@ -36,10 +36,10 @@ opt = {
    preprocess = 'regular',      -- for special purpose preprocessing, e.g., for colorization, change this (selects preprocessing functions in util.lua)
    nThreads = 2,                -- # threads for loading data
    save_epoch_freq = 50,        -- save a model every save_epoch_freq epochs (does not overwrite previously saved models)
-   save_latest_freq = 5000,     -- save the latest model every latest_freq sgd iterations (overwrites the previous latest model)
+   save_latest_freq = 452,     -- save the latest model every latest_freq sgd iterations (overwrites the previous latest model)
    print_freq = 50,             -- print the debug information every print_freq iterations
-   display_freq = 100,          -- display the current results every display_freq iterations
-   save_display_freq = 5000,    -- save the current display of results every save_display_freq_iterations
+   display_freq = 5,          -- display the current results every display_freq iterations
+   save_display_freq = 452,    -- save the current display of results every save_display_freq_iterations
    continue_train		=0,            -- if continue training, load the latest model: 1: true, 0: false
    serial_batches = 0,          -- if 1, takes images in order to make batches, otherwise takes them randomly
    serial_batch_iter = 1,       -- iter into serial image list
@@ -51,7 +51,7 @@ opt = {
    which_model_netD = 'basic', -- selects model to use for netD
    which_model_netG = 'unet',  -- selects model to use for netG
    n_layers_D = 0,             -- only used if which_model_netD=='n_layers'
-   lambda = 1000,               -- weight on L1 term in objective INITIAL = 100
+   lambda = 100,               -- weight on L1 term in objective INITIAL = 100
 }
 
 -- one-line argument parser. parses enviroment variables to override the defaults
@@ -217,7 +217,6 @@ local parametersG, gradParametersG = netG:getParameters()
 
 if opt.display then disp = require 'display' end
 
-
 function createRealFake()
     -- load real
     -- time for loading data reset and started
@@ -234,21 +233,26 @@ function createRealFake()
     else
         real_AB = real_B -- unconditional GAN, only penalizes structure in B
     end
-    mu = torch.zeros(100)
-    sigma = 100*torch.eye(100)
-    n = torch.zeros(1,3,100,100)
+    mu = torch.zeros(256)
+    sigma = 10000*torch.eye(256)
+    n = torch.zeros(1,3,256,256)
     -- real_A = torch.zeros(1,3,256,256)
 
-    local i = 1
-    while i<101 do
-      sample_1 = distributions.mvn.rnd(mu, sigma) -- a 
-      sample_2 = distributions.mvn.rnd(mu, sigma) -- a 
-      sample_3 = distributions.mvn.rnd(mu, sigma) -- a 
-      n[{1,1,{1,100},i}] = sample_1
-      n[{1,2,{1,100},i}] = sample_2
-      n[{1,3,{1,100},i}] = sample_3
-      i = i + 1
+    local y = 1
+    local z = 1
+    while y<257 do
+    	z=1
+      while z<257 do 
+	      n[{1,1,z,y}] = torch.uniform()*256
+	      n[{1,2,z,y}] = torch.uniform()*256
+	      n[{1,3,z,y}] = torch.uniform()*256
+	      z = z+1
+	     end 
+      y = y + 1
     end
+    -- file = io.open("out", "w")
+    -- io.write(n)
+
     -- print(real_A:size())
     if opt.gpu>0 then 
       n = n:cuda();
@@ -256,6 +260,16 @@ function createRealFake()
     -- print(sample:size())
     -- created fake using real_A as input
     fake_B = netG:forward({n, real_A})
+    print(fake_B:size())
+    -- graph.dot(netG.fg, 'Main Graph', 'Main Graph')
+    -- print(netG:get(8).output)
+    -- if (counter==0)  then
+    --   gen_out_old = netG:get(80).output
+    -- -- optim.adam(fGx, parametersG, optimStateG)
+    -- else
+    --   print(netG:get(80).output-gen_out_old)
+    --   gen_out_old = netG:get(80).output
+    -- end
     -- k = netG:forward({n,real_A})
     if opt.condition_GAN==1 then
         fake_AB = torch.cat(real_A,fake_B,2)
@@ -354,7 +368,6 @@ paths.mkdir(opt.checkpoints_dir .. '/' .. opt.name)
 file = torch.DiskFile(paths.concat(opt.checkpoints_dir, opt.name, 'opt.txt'), 'w')
 file:writeObject(opt)
 file:close()
-
 local counter = 0
 for epoch = 1, opt.niter do
     epoch_tm:reset()
@@ -370,6 +383,8 @@ for epoch = 1, opt.niter do
         optim.adam(fGx, parametersG, optimStateG)
         
         -- display
+        
+        
         counter = counter + 1
         if counter % opt.display_freq == 0 and opt.display then
             createRealFake()
@@ -380,8 +395,22 @@ for epoch = 1, opt.niter do
                 disp.image(util.deprocessL_batch(real_A_s), {win=opt.display_id, title=opt.name .. ' input'})
                 disp.image(util.deprocessLAB_batch(real_A_s, fake_B_s), {win=opt.display_id+1, title=opt.name .. ' output'})
                 disp.image(util.deprocessLAB_batch(real_A_s, real_B_s), {win=opt.display_id+2, title=opt.name .. ' target'})
-            else
-                disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id, title=opt.name .. ' input'})
+            else 
+            	  -- print(netG:get(8).output)
+				        if (counter/opt.display_freq==1)  then
+				          gen_out_old = netG:get(1).output
+				          -- print("YESSSSSS")
+				        -- optim.adam(fGx, parametersG, optimStateG)
+				        else
+				          print(netG:get(1).output-gen_out_old)
+				          gen_out_old = netG:get(1).output
+				        end  
+				        -- fake_AB = torch.cat(input,Generator_out,2)
+				        -- output = util.deprocess_batch(Generator_out)
+				        -- input = util.deprocess_batch(input):float()
+				        -- output = output:float()
+				        -- target = util.deprocess_batch(target):float()
+            	  disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id, title=opt.name .. ' input'})
                 disp.image(util.deprocess_batch(util.scaleBatch(fake_B:float(),100,100)), {win=opt.display_id+1, title=opt.name .. ' output'})
                 disp.image(util.deprocess_batch(util.scaleBatch(real_B:float(),100,100)), {win=opt.display_id+2, title=opt.name .. ' target'})
             end
@@ -449,5 +478,6 @@ for epoch = 1, opt.niter do
             epoch, opt.niter, epoch_tm:time().real))
     parametersD, gradParametersD = netD:getParameters() -- reflatten the params and get them
     parametersG, gradParametersG = netG:getParameters()
+
 
 end

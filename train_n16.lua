@@ -8,7 +8,7 @@ require 'nn'
 require 'optim'
 util = paths.dofile('util/util.lua')
 require 'image'
-require 'models_n1'
+require 'models_n16'
 -- require 'distributions'
 -- nngraph.setDebug(true)
 
@@ -239,20 +239,20 @@ function createRealFake()
     -- sigma = 10000*torch.eye(256)
     
     -- real_A = torch.zeros(1,3,256,256)
-    n = torch.zeros(1,1,1,1)
-    -- local y = 1
-    -- local z = 1
-    -- while y<17 do
-    -- 	z=1
-    --   while z<17 do 
-	   --    n[{1,1,z,y}] = torch.uniform()*256
-	   --    -- n[{1,2,z,y}] = torch.uniform()*256
-	   --    -- n[{1,3,z,y}] = torch.uniform()*256
-	   --    z = z+1
-	   --   end 
-    --   y = y + 1
-    -- end
-    n[{1,1,1,1}] = torch.uniform()*256
+    n = torch.zeros(1,1,16,16)
+    local y = 1
+    local z = 1
+    while y<17 do
+    	z=1
+      while z<17 do 
+	      n[{1,1,z,y}] = torch.uniform()*256
+	      -- n[{1,2,z,y}] = torch.uniform()*256
+	      -- n[{1,3,z,y}] = torch.uniform()*256
+	      z = z+1
+	     end 
+      y = y + 1
+    end
+    -- n[{1,1,1,1}] = torch.uniform()*256
     if opt.gpu>0 then 
       n = n:cuda();
     end
@@ -260,7 +260,7 @@ function createRealFake()
     -- print(sample:size())
     -- created fake using real_A as input
     -- print(fake_B:size())
-    graph.dot(netG.fg, 'Noise_1', 'Noise_1')
+    graph.dot(netG.fg, 'Noise_16', 'Noise_16')
     -- print(netG:get(8).output)
     -- if (counter==0)  then
     --   gen_out_old = netG:get(80).output
@@ -401,20 +401,20 @@ for epoch = 1, opt.niter do
 				        --   -- print("YESSSSSS")
 				        -- -- optim.adam(fGx, parametersG, optimStateG)
 				        -- else
-                n = torch.zeros(1,1,1,1)
-                -- local y = 1
-                -- local z = 1
-                -- while y<17 do
-                --   z=1
-                --   while z<17 do 
-                --     n[{1,1,z,y}] = torch.uniform()*256
-                --     -- n[{1,2,z,y}] = torch.uniform()*256
-                --     -- n[{1,3,z,y}] = torch.uniform()*256
-                --     z = z+1
-                --    end 
-                --   y = y + 1
-                -- end
-                n[{1,1,1,1}] = torch.uniform()*256
+                n = torch.zeros(1,1,16,16)
+                local y = 1
+                local z = 1
+                while y<17 do
+                  z=1
+                  while z<17 do 
+                    n[{1,1,z,y}] = torch.uniform()*256
+                    -- n[{1,2,z,y}] = torch.uniform()*256
+                    -- n[{1,3,z,y}] = torch.uniform()*256
+                    z = z+1
+                   end 
+                  y = y + 1
+                end
+                -- n[{1,1,1,1}] = torch.uniform()*256
                 if opt.gpu>0 then 
                   n = n:cuda();
                 end
@@ -422,7 +422,7 @@ for epoch = 1, opt.niter do
                   print("Hello from the inside")
                   Generator_out = netG:forward({n, real_A})
                   Generator_out_f = Generator_out:float()
-                  netOut = netG:get(76).output
+                  netOut = netG:get(64).output
                   gen_out_old = Generator_out_f
                   noise_out = util.normalize(netOut:float())
                   noise_out_old = noise_out
@@ -430,7 +430,7 @@ for epoch = 1, opt.niter do
                 else
                   Generator_out = netG:forward({n, real_A})
                   Generator_out_f = Generator_out:float()
-                  netOut = netG:get(76).output      
+                  netOut = netG:get(64).output      
                   noise_out = util.normalize(netOut:float())
                   a = noise_out-noise_out_old
                   b = Generator_out_f-gen_out_old

@@ -40,7 +40,7 @@ opt = {
    print_freq = 50,             -- print the debug information every print_freq iterations
    display_freq = 2,          -- display the current results every display_freq iterations
    save_display_freq = 452,    -- save the current display of results every save_display_freq_iterations
-   continue_train		=0,            -- if continue training, load the latest model: 1: true, 0: false
+   continue_train   =0,            -- if continue training, load the latest model: 1: true, 0: false
    serial_batches = 0,          -- if 1, takes images in order to make batches, otherwise takes them randomly
    serial_batch_iter = 1,       -- iter into serial image list
    checkpoints_dir = './checkpoints', -- models are saved here
@@ -206,7 +206,7 @@ if opt.gpu > 0 then
    netD:cuda(); netG:cuda(); criterion:cuda(); criterionAE:cuda();
    print('done')
 else
-	print('running model on CPU')
+  print('running model on CPU')
 end
 
 -- gradParameters are the stored (not calculated) values of the gradient and parameters are the values of weights and biases.
@@ -243,13 +243,13 @@ function createRealFake()
     -- local y = 1
     -- local z = 1
     -- while y<17 do
-    -- 	z=1
+    --  z=1
     --   while z<17 do 
-	   --    n[{1,1,z,y}] = torch.uniform()*256
-	   --    -- n[{1,2,z,y}] = torch.uniform()*256
-	   --    -- n[{1,3,z,y}] = torch.uniform()*256
-	   --    z = z+1
-	   --   end 
+     --    n[{1,1,z,y}] = torch.uniform()*256
+     --    -- n[{1,2,z,y}] = torch.uniform()*256
+     --    -- n[{1,3,z,y}] = torch.uniform()*256
+     --    z = z+1
+     --   end 
     --   y = y + 1
     -- end
     n[{1,1,1,1}] = torch.uniform()*256
@@ -290,7 +290,7 @@ local fDx = function(x)
     local output = netD:forward(real_AB)
     local label = torch.FloatTensor(output:size()):fill(real_label)
     if opt.gpu>0 then 
-    	label = label:cuda()
+      label = label:cuda()
     end
     -- Caclulate the error for misclassifying the real data points as fake
     local errD_real = criterion:forward(output, label)
@@ -322,14 +322,14 @@ local fGx = function(x)
     -- GAN loss
     local df_dg = torch.zeros(fake_B:size())
     if opt.gpu>0 then 
-    	df_dg = df_dg:cuda();
+      df_dg = df_dg:cuda();
     end
     
     if opt.use_GAN==1 then
        local output = netD.output -- netD:forward{input_A,input_B} was already executed in fDx, so save computation
        local label = torch.FloatTensor(output:size()):fill(real_label) -- fake labels are real for generator cost as we need to minimize the cost  when output-label is done
        if opt.gpu>0 then 
-       	label = label:cuda();
+        label = label:cuda();
        end
        errG = criterion:forward(output, label)
        local df_do = criterion:backward(output, label) -- grad wrt the output of the networks
@@ -341,7 +341,7 @@ local fGx = function(x)
     -- unary loss
     local df_do_AE = torch.zeros(fake_B:size())
     if opt.gpu>0 then 
-    	df_do_AE = df_do_AE:cuda();
+      df_do_AE = df_do_AE:cuda();
     end
     if opt.use_L1==1 then
        errL1 = criterionAE:forward(fake_B, real_B)
@@ -395,12 +395,12 @@ for epoch = 1, opt.niter do
                 disp.image(util.deprocessLAB_batch(real_A_s, fake_B_s), {win=opt.display_id+1, title=opt.name .. ' output'})
                 disp.image(util.deprocessLAB_batch(real_A_s, real_B_s), {win=opt.display_id+2, title=opt.name .. ' target'})
             else 
-            	  -- print(netG:get(8).output)
-				        -- if (counter/opt.display_freq==1)  then
-				        --   gen_out_old = netG:get(1).weight
-				        --   -- print("YESSSSSS")
-				        -- -- optim.adam(fGx, parametersG, optimStateG)
-				        -- else
+                -- print(netG:get(8).output)
+                -- if (counter/opt.display_freq==1)  then
+                --   gen_out_old = netG:get(1).weight
+                --   -- print("YESSSSSS")
+                -- -- optim.adam(fGx, parametersG, optimStateG)
+                -- else
                 n = torch.zeros(1,1,1,1)
                 -- local y = 1
                 -- local z = 1
@@ -418,7 +418,7 @@ for epoch = 1, opt.niter do
                 if opt.gpu>0 then 
                   n = n:cuda();
                 end
-				        if (counter/opt.display_freq==1)  then
+                if (counter/opt.display_freq==1)  then
                   print("Hello from the inside")
                   Generator_out = netG:forward({n, real_A})
                   Generator_out_f = Generator_out:float()
@@ -436,21 +436,21 @@ for epoch = 1, opt.niter do
                   b = Generator_out_f-gen_out_old
                   disp.image(util.scaleBatch(a,100,100),{win=opt.display_id, title=opt.name .. ' noise difference'})
                   disp.image(util.scaleBatch(b,100,100),{win=opt.display_id+1, title=opt.name .. ' Generator difference'})
-			            disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id+2, title=opt.name .. 'difference'})
+                  disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id+2, title=opt.name .. 'difference'})
                   noise_out_old = noise_out
                   gen_out_old = Generator_out_f
                 end
                 -- netOut = netG:get(63).output
                 -- noise_out = util.normalize(netOut:float())
                 -- print(noise_out:size())
-				          -- gen_out_old = netG:get(1).weight
-				        -- end  
-				        -- fake_AB = torch.cat(input,Generator_out,2)
-				        -- output = util.deprocess_batch(Generator_out)
-				        -- input = util.deprocess_batch(input):float()
-				        -- output = output:float()
-				        -- target = util.deprocess_batch(target):float()
-            	  disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id+3, title=opt.name .. ' input'})
+                  -- gen_out_old = netG:get(1).weight
+                -- end  
+                -- fake_AB = torch.cat(input,Generator_out,2)
+                -- output = util.deprocess_batch(Generator_out)
+                -- input = util.deprocess_batch(input):float()
+                -- output = output:float()
+                -- target = util.deprocess_batch(target):float()
+                disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id+3, title=opt.name .. ' input'})
                 disp.image(util.deprocess_batch(util.scaleBatch(fake_B:float(),100,100)), {win=opt.display_id+4, title=opt.name .. ' output'})
                 disp.image(util.deprocess_batch(util.scaleBatch(real_B:float(),100,100)), {win=opt.display_id+5, title=opt.name .. ' target'})
             end

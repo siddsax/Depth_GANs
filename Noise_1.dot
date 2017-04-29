@@ -1,0 +1,581 @@
+digraph G {
+	graph [bb="0,0,1336,9798"];
+	node [label="\N",
+		shape=oval
+	];
+	n1	 [height=1.6303,
+		label="Node1\ninput = {torch.CudaTensor[1x3x256x256]}\lmodule = cudnn.Tanh\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x3x256x256]}",
+		pos="816,191",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n2	 [height=1.3356,
+		label="Node2\ninput = {torch.CudaTensor[1x3x256x256]}\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x3x256x256]}",
+		pos="816,48",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n1 -> n2	 [pos="e,816,96.121 816,132.24 816,123.7 816,114.9 816,106.36"];
+	n3	 [height=1.9249,
+		label="Node3\ninput = {torch.CudaTensor[1x3x256x256],torch.CudaTensor[1x3x256x256]}\lmapindex = {Node4,Node5}\lmodule = nn.CAddTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x3x256x256]}",
+		pos="816,356",
+		tooltip="[[C]]:-1_",
+		width=8.6169];
+	n3 -> n1	 [pos="e,816,249.75 816,286.35 816,277.59 816,268.63 816,259.89"];
+	n4	 [height=1.6303,
+		label="Node4\ninput = {torch.CudaTensor[1x3x256x256]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x3x256x256]}",
+		pos="665,521",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n4 -> n3	 [pos="e,753.78,424.16 716.97,463.9 726.6,453.5 736.8,442.49 746.85,431.64"];
+	n5	 [height=1.6303,
+		label="Node5\ninput = {torch.CudaTensor[1x64x128x128]}\lmodule = cudnn.SpatialFullConvolution(64 -> 3, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x3x256x256]}",
+		pos="1049,5911",
+		tooltip="[[C]]:-1_",
+		width=7.1443];
+	n5 -> n3	 [pos="e,869.66,424.36 1024,5852.6 999.84,5792 967,5693.1 967,5604 967,5604 967,5604 967,674 967,584.92 917.8,494.25 875.57,432.83"];
+	n6	 [height=1.6303,
+		label="Node6\ninput = {torch.CudaTensor[1x128x128x128]}\lmodule = cudnn.SpatialFullConvolution(128 -> 3, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x3x256x256]}",
+		pos="594,675",
+		tooltip="[[C]]:-1_",
+		width=7.2825];
+	n6 -> n4	 [pos="e,638.24,579.29 620.84,616.54 625.11,607.39 629.56,597.87 633.92,588.54"];
+	n7	 [height=1.6303,
+		label="Node7\ninput = {torch.CudaTensor[1x64x128x128]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x64x128x128]}",
+		pos="1073,6219",
+		tooltip="[[C]]:-1_",
+		width=5.7861];
+	n7 -> n5	 [pos="e,1053.5,5969.9 1068.5,6160.1 1064.4,6108.9 1058.6,6034.2 1054.3,5980.1"];
+	n8	 [height=1.6303,
+		label="Node8\ninput = {torch.CudaTensor[1x128x128x128]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x128x128x128]}",
+		pos="427,829",
+		tooltip="[[C]]:-1_",
+		width=5.9243];
+	n8 -> n6	 [pos="e,532.16,732.28 487.76,772.69 499.73,761.8 512.38,750.29 524.61,739.16"];
+	n9	 [height=1.6303,
+		label="Node9\ninput = {torch.CudaTensor[1x64x128x128]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x64x128x128]}",
+		pos="1075,6384",
+		tooltip="[[C]]:-1_",
+		width=5.7861];
+	n9 -> n7	 [pos="e,1073.7,6277.7 1074.3,6325.1 1074.1,6313.1 1074,6300.3 1073.8,6288"];
+	n10	 [height=1.9249,
+		label="Node10\ninput = {torch.CudaTensor[1x64x128x128],torch.CudaTensor[1x64x128x128]}\lmapindex = {Node12,Node13}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x128x128x128]}",
+		pos="341,994",
+		tooltip="[[C]]:-1_",
+		width=8.8696];
+	n10 -> n8	 [pos="e,396.76,887.32 376.97,924.82 381.96,915.36 387.08,905.66 392.05,896.25"];
+	n11	 [height=1.6303,
+		label="Node11\ninput = {torch.CudaTensor[1x128x64x64]}\lmodule = cudnn.SpatialFullConvolution(128 -> 64, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x64x128x128]}",
+		pos="1069,6549",
+		tooltip="[[C]]:-1_",
+		width=7.3969];
+	n11 -> n9	 [pos="e,1072.9,6442.7 1071.1,6490.1 1071.6,6478.1 1072,6465.3 1072.5,6453"];
+	n12	 [height=1.6303,
+		label="Node12\ninput = {torch.CudaTensor[1x64x128x128]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x64x128x128]}",
+		pos="341,1159",
+		tooltip="[[C]]:-1_",
+		width=5.7861];
+	n12 -> n10	 [pos="e,341,1063.3 341,1100.1 341,1091.4 341,1082.4 341,1073.4"];
+	n13	 [height=1.9249,
+		label="Node13\ngradOutputBuffer = torch.CudaTensor[1x64x128x128]\linput = {torch.CudaTensor[1x3x256x256]}\lmodule = cudnn.SpatialConvolution(\
+3 -> 64, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x64x128x128],torch.CudaTensor[1x64x128x128]}",
+		pos="362,9288",
+		tooltip="[[C]]:-1_",
+		width=9.5369];
+	n13 -> n10	 [pos="e,186.68,1054.8 211.89,9225.7 112.36,9173.9 0,9089.1 0,8970 0,8970 0,8970 0,1312 0,1203.1 43.07,1174 123,1100 139.31,1084.9 158.19,\
+1071.6 177.89,1059.9"];
+	n31	 [height=1.6303,
+		label="Node31\ninput = {torch.CudaTensor[1x64x128x128]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x64x128x128]}",
+		pos="362,9123",
+		tooltip="[[C]]:-1_",
+		width=5.7861];
+	n13 -> n31	 [pos="e,362,9181.8 362,9218.3 362,9209.6 362,9200.6 362,9191.9"];
+	n14	 [height=1.6303,
+		label="Node14\ninput = {torch.CudaTensor[1x128x64x64]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x128x64x64]}",
+		pos="1044,6703",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n14 -> n11	 [pos="e,1059.5,6607.7 1053.5,6644.1 1054.9,6635.4 1056.4,6626.5 1057.9,6617.6"];
+	n15	 [height=1.6303,
+		label="Node15\ninput = {torch.CudaTensor[1x256x64x64]}\lmodule = cudnn.SpatialFullConvolution(256 -> 64, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x64x128x128]}",
+		pos="341,1313",
+		tooltip="[[C]]:-1_",
+		width=7.3969];
+	n15 -> n12	 [pos="e,341,1217.7 341,1254.1 341,1245.5 341,1236.7 341,1227.9"];
+	n16	 [height=1.6303,
+		label="Node16\ninput = {{torch.CudaTensor[1x1x1x1],torch.CudaTensor[1x3x256x256]}}\lreverseMap = {}\lselectindex = 2\lgradOutput = {torch.CudaTensor[\
+1x3x256x256]}",
+		pos="363,9453",
+		tooltip="[[C]]:-1_-2",
+		width=8.3406];
+	n16 -> n13	 [pos="e,362.42,9357.3 362.64,9394.1 362.59,9385.4 362.54,9376.4 362.48,9367.4"];
+	n17	 [height=1.6303,
+		label="Node17\ninput = {torch.CudaTensor[1x128x64x64]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x128x64x64]}",
+		pos="1034,6868",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n17 -> n14	 [pos="e,1040.5,6761.7 1037.6,6809.1 1038.3,6797.1 1039.1,6784.3 1039.8,6772"];
+	n18	 [height=1.6303,
+		label="Node18\ninput = {torch.CudaTensor[1x256x64x64]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x256x64x64]}",
+		pos="341,1467",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n18 -> n15	 [pos="e,341,1371.7 341,1408.1 341,1399.5 341,1390.7 341,1381.9"];
+	n19	 [height=1.6303,
+		label="Node19\ninput = {{torch.CudaTensor[1x1x1x1],torch.CudaTensor[1x3x256x256]}}\lreverseMap = {}\lnSplitOutputs = 2\lgradOutput = {{\
+torch.CudaTensor[1x1x1x1],torch.CudaTensor[1x3x256x256]}}",
+		pos="672,9607",
+		tooltip="[[C]]:-1_ split at [...ddhartha/torch/install/share/lua/5.1/nngraph/gmodule.lua]:96-mnode",
+		width=9.0078];
+	n19 -> n16	 [pos="e,472.17,9507.7 561.75,9551.8 535.71,9539 507.83,9525.2 481.43,9512.3"];
+	n62	 [height=1.6303,
+		label="Node62\ninput = {{torch.CudaTensor[1x1x1x1],torch.CudaTensor[1x3x256x256]}}\lreverseMap = {}\lselectindex = 1\lgradOutput = {torch.CudaTensor[\
+1x1x1x1]}",
+		pos="982,9453",
+		tooltip="[[C]]:-1_-1",
+		width=8.3406];
+	n19 -> n62	 [pos="e,872.48,9507.7 782.6,9551.8 808.74,9539 836.71,9525.2 863.18,9512.3"];
+	n20	 [height=1.6303,
+		label="Node20\ninput = {torch.CudaTensor[1x256x32x32]}\lmodule = cudnn.SpatialFullConvolution(256 -> 128, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x128x64x64]}",
+		pos="1028,7033",
+		tooltip="[[C]]:-1_",
+		width=7.5351];
+	n20 -> n17	 [pos="e,1031.9,6926.7 1030.1,6974.1 1030.6,6962.1 1031,6949.3 1031.5,6937"];
+	n21	 [height=1.9249,
+		label="Node21\ninput = {torch.CudaTensor[1x128x64x64],torch.CudaTensor[1x128x64x64]}\lmapindex = {Node24,Node25}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x256x64x64]}",
+		pos="341,1632",
+		tooltip="[[C]]:-1_",
+		width=8.6169];
+	n21 -> n18	 [pos="e,341,1525.8 341,1562.3 341,1553.6 341,1544.6 341,1535.9"];
+	n22	 [height=1.3356,
+		label="Node22\ninput = {torch.CudaTensor[1x1x1x1],torch.CudaTensor[1x3x256x256]}\lreverseMap = {}\lgradOutput = {{torch.CudaTensor[1x1x1x1],\
+torch.CudaTensor[1x3x256x256]}}",
+		pos="672,9750",
+		tooltip="[[C]]:-1_",
+		width=9.0078];
+	n22 -> n19	 [pos="e,672,9665.7 672,9701.7 672,9693.4 672,9684.6 672,9675.9"];
+	n23	 [height=1.6303,
+		label="Node23\ninput = {torch.CudaTensor[1x256x32x32]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x256x32x32]}",
+		pos="1009,7187",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n23 -> n20	 [pos="e,1020.8,7091.7 1016.2,7128.1 1017.3,7119.5 1018.4,7110.7 1019.5,7101.9"];
+	n24	 [height=1.6303,
+		label="Node24\ninput = {torch.CudaTensor[1x128x64x64]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x128x64x64]}",
+		pos="346,1797",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n24 -> n21	 [pos="e,343.1,1701.3 344.22,1738.1 343.96,1729.4 343.68,1720.4 343.41,1711.4"];
+	n25	 [height=1.9249,
+		label="Node25\ngradOutputBuffer = torch.CudaTensor[1x128x64x64]\linput = {torch.CudaTensor[1x128x64x64]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x128x64x64],torch.CudaTensor[1x128x64x64]}",
+		pos="362,8804",
+		tooltip="[[C]]:-1_",
+		width=9.2842];
+	n25 -> n21	 [pos="e,191.13,1692.7 216.41,8741.6 195.42,8729 175.16,8714.5 158,8698 79.936,8623 38,8594.3 38,8486 38,8486 38,8486 38,1950 38,1846.8 \
+61.697,1812.7 133,1738 147.34,1723 164.3,1709.8 182.25,1698.2"];
+	n42	 [height=1.6303,
+		label="Node42\ninput = {torch.CudaTensor[1x128x64x64]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x128x64x64]}",
+		pos="371,8639",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n25 -> n42	 [pos="e,367.81,8697.8 365.79,8734.3 366.27,8725.6 366.77,8716.6 367.25,8707.9"];
+	n26	 [height=1.6303,
+		label="Node26\ninput = {torch.CudaTensor[1x256x32x32]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x256x32x32]}",
+		pos="1002,7352",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n26 -> n23	 [pos="e,1006.5,7245.7 1004.5,7293.1 1005,7281.1 1005.6,7268.3 1006.1,7256"];
+	n27	 [height=1.6303,
+		label="Node27\ninput = {torch.CudaTensor[1x512x32x32]}\lmodule = cudnn.SpatialFullConvolution(512 -> 128, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x128x64x64]}",
+		pos="365,1951",
+		tooltip="[[C]]:-1_",
+		width=7.5351];
+	n27 -> n24	 [pos="e,353.22,1855.7 357.76,1892.1 356.69,1883.5 355.58,1874.7 354.49,1865.9"];
+	n28	 [height=1.6303,
+		label="Node28\ninput = {torch.CudaTensor[1x64x128x128]}\lmodule = cudnn.SpatialConvolution(64 -> 128, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x128x64x64]}",
+		pos="362,8969",
+		tooltip="[[C]]:-1_",
+		width=6.9824];
+	n28 -> n25	 [pos="e,362,8873.3 362,8910.1 362,8901.4 362,8892.4 362,8883.4"];
+	n29	 [height=1.6303,
+		label="Node29\ninput = {torch.CudaTensor[1x512x16x16]}\lmodule = cudnn.SpatialFullConvolution(512 -> 256, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x256x32x32]}",
+		pos="1000,7517",
+		tooltip="[[C]]:-1_",
+		width=7.5351];
+	n29 -> n26	 [pos="e,1001.3,7410.7 1000.7,7458.1 1000.9,7446.1 1001,7433.3 1001.2,7421"];
+	n30	 [height=1.6303,
+		label="Node30\ninput = {torch.CudaTensor[1x512x32x32]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x32x32]}",
+		pos="374,2105",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n30 -> n27	 [pos="e,368.42,2009.7 370.57,2046.1 370.06,2037.5 369.54,2028.7 369.02,2019.9"];
+	n31 -> n28	 [pos="e,362,9027.7 362,9064.1 362,9055.5 362,9046.7 362,9037.9"];
+	n32	 [height=1.6303,
+		label="Node32\ninput = {torch.CudaTensor[1x512x16x16]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x16x16]}",
+		pos="999,7671",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n32 -> n29	 [pos="e,999.62,7575.7 999.38,7612.1 999.44,7603.5 999.5,7594.7 999.55,7585.9"];
+	n33	 [height=1.9249,
+		label="Node33\ninput = {torch.CudaTensor[1x256x32x32],torch.CudaTensor[1x256x32x32]}\lmapindex = {Node35,Node36}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x32x32]}",
+		pos="376,2270",
+		tooltip="[[C]]:-1_",
+		width=8.6169];
+	n33 -> n30	 [pos="e,374.71,2163.8 375.16,2200.3 375.05,2191.6 374.94,2182.6 374.83,2173.9"];
+	n34	 [height=1.6303,
+		label="Node34\ninput = {torch.CudaTensor[1x512x16x16]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x512x16x16]}",
+		pos="998,7836",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n34 -> n32	 [pos="e,998.65,7729.7 998.36,7777.1 998.43,7765.1 998.51,7752.3 998.58,7740"];
+	n35	 [height=1.6303,
+		label="Node35\ninput = {torch.CudaTensor[1x256x32x32]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x256x32x32]}",
+		pos="386,2435",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n35 -> n33	 [pos="e,380.19,2339.3 382.45,2376.1 381.92,2367.4 381.36,2358.4 380.81,2349.4"];
+	n36	 [height=1.9249,
+		label="Node36\ngradOutputBuffer = torch.CudaTensor[1x256x32x32]\linput = {torch.CudaTensor[1x256x32x32]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x256x32x32],torch.CudaTensor[1x256x32x32]}",
+		pos="400,8320",
+		tooltip="[[C]]:-1_",
+		width=9.2842];
+	n36 -> n33	 [pos="e,229.85,2331.3 262.05,8256.8 241.67,8244.3 221.88,8230 205,8214 124.98,8138.1 76,8112.3 76,8002 76,8002 76,8002 76,2588 76,2484.4 \
+101.52,2451 173,2376 187.05,2361.3 203.64,2348.2 221.17,2336.7"];
+	n53	 [height=1.6303,
+		label="Node53\ninput = {torch.CudaTensor[1x256x32x32]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x256x32x32]}",
+		pos="418,8155",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n36 -> n53	 [pos="e,411.62,8213.8 407.58,8250.3 408.55,8241.6 409.54,8232.6 410.5,8223.9"];
+	n37	 [height=1.6303,
+		label="Node37\ninput = {torch.CudaTensor[1x256x8x8]}\lmodule = cudnn.SpatialFullConvolution(256 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x16x16]}",
+		pos="983,8001",
+		tooltip="[[C]]:-1_",
+		width=7.5351];
+	n37 -> n34	 [pos="e,992.69,7894.7 988.33,7942.1 989.44,7930.1 990.61,7917.3 991.74,7905"];
+	n38	 [height=1.6303,
+		label="Node38\ninput = {torch.CudaTensor[1x1024x16x16]}\lmodule = cudnn.SpatialFullConvolution(1024 -> 256, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x256x32x32]}",
+		pos="392,2589",
+		tooltip="[[C]]:-1_",
+		width=7.6733];
+	n38 -> n35	 [pos="e,388.28,2493.7 389.71,2530.1 389.38,2521.5 389.03,2512.7 388.68,2503.9"];
+	n39	 [height=1.6303,
+		label="Node39\ninput = {torch.CudaTensor[1x128x64x64]}\lmodule = cudnn.SpatialConvolution(128 -> 256, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x256x32x32]}",
+		pos="381,8485",
+		tooltip="[[C]]:-1_",
+		width=7.0968];
+	n39 -> n36	 [pos="e,392.04,8389.3 387.75,8426.1 388.76,8417.4 389.81,8408.4 390.86,8399.4"];
+	n40	 [height=1.6303,
+		label="Node40\ninput = {torch.CudaTensor[1x256x8x8]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x256x8x8]}",
+		pos="983,8155",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n40 -> n37	 [pos="e,983,8059.7 983,8096.1 983,8087.5 983,8078.7 983,8069.9"];
+	n41	 [height=1.6303,
+		label="Node41\ninput = {torch.CudaTensor[1x1024x16x16]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x1024x16x16]}",
+		pos="409,2743",
+		tooltip="[[C]]:-1_",
+		width=5.7861];
+	n41 -> n38	 [pos="e,398.46,2647.7 402.52,2684.1 401.57,2675.5 400.57,2666.7 399.59,2657.9"];
+	n42 -> n39	 [pos="e,377.2,8543.7 374.81,8580.1 375.37,8571.5 375.96,8562.7 376.53,8553.9"];
+	n43	 [height=1.6303,
+		label="Node43\ninput = {torch.CudaTensor[1x256x8x8]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x256x8x8]}",
+		pos="983,8320",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n43 -> n40	 [pos="e,983,8213.7 983,8261.1 983,8249.1 983,8236.3 983,8224"];
+	n44	 [height=1.9249,
+		label="Node44\ninput = {torch.CudaTensor[1x512x16x16],torch.CudaTensor[1x512x16x16]}\lmapindex = {Node46,Node47}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x1024x16x16]}",
+		pos="414,2908",
+		tooltip="[[C]]:-1_",
+		width=8.6169];
+	n44 -> n41	 [pos="e,410.77,2801.8 411.89,2838.3 411.63,2829.6 411.35,2820.6 411.08,2811.9"];
+	n45	 [height=1.6303,
+		label="Node45\ninput = {torch.CudaTensor[1x128x4x4]}\lmodule = cudnn.SpatialFullConvolution(128 -> 256, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x256x8x8]}",
+		pos="983,8485",
+		tooltip="[[C]]:-1_",
+		width=7.5351];
+	n45 -> n43	 [pos="e,983,8378.7 983,8426.1 983,8414.1 983,8401.3 983,8389"];
+	n46	 [height=1.6303,
+		label="Node46\ninput = {torch.CudaTensor[1x512x16x16]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x512x16x16]}",
+		pos="418,3073",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n46 -> n44	 [pos="e,415.68,2977.3 416.58,3014.1 416.37,3005.4 416.14,2996.4 415.92,2987.4"];
+	n47	 [height=1.9249,
+		label="Node47\ngradOutputBuffer = torch.CudaTensor[1x512x16x16]\linput = {torch.CudaTensor[1x512x16x16]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x16x16],torch.CudaTensor[1x512x16x16]}",
+		pos="438,7836",
+		tooltip="[[C]]:-1_",
+		width=9.2842];
+	n47 -> n44	 [pos="e,263.06,2968.7 291.37,7773.5 270.39,7761 250.14,7746.5 233,7730 155.15,7655.1 114,7626.1 114,7518 114,7518 114,7518 114,3226 114,\
+3186.2 149.71,3072.1 205,3014 219.31,2999 236.24,2985.7 254.18,2974.2"];
+	n64	 [height=1.6303,
+		label="Node64\ninput = {torch.CudaTensor[1x512x16x16]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x16x16]}",
+		pos="446,7671",
+		tooltip="[[C]]:-1_",
+		width=5.6479];
+	n47 -> n64	 [pos="e,443.17,7729.8 441.37,7766.3 441.8,7757.6 442.24,7748.6 442.67,7739.9"];
+	n48	 [height=1.6303,
+		label="Node48\ninput = {torch.CudaTensor[1x128x4x4]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x128x4x4]}",
+		pos="983,8639",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n48 -> n45	 [pos="e,983,8543.7 983,8580.1 983,8571.5 983,8562.7 983,8553.9"];
+	n49	 [height=1.6303,
+		label="Node49\ninput = {torch.CudaTensor[1x1024x8x8]}\lmodule = cudnn.SpatialFullConvolution(1024 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x16x16]}",
+		pos="422,3227",
+		tooltip="[[C]]:-1_",
+		width=7.6733];
+	n49 -> n46	 [pos="e,419.52,3131.7 420.48,3168.1 420.25,3159.5 420.02,3150.7 419.79,3141.9"];
+	n50	 [height=1.6303,
+		label="Node50\ninput = {torch.CudaTensor[1x256x32x32]}\lmodule = cudnn.SpatialConvolution(256 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x16x16]}",
+		pos="428,8001",
+		tooltip="[[C]]:-1_",
+		width=7.0968];
+	n50 -> n47	 [pos="e,433.81,7905.3 431.55,7942.1 432.08,7933.4 432.64,7924.4 433.19,7915.4"];
+	n51	 [height=1.6303,
+		label="Node51\ninput = {torch.CudaTensor[1x128x4x4]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x128x4x4]}",
+		pos="983,8804",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n51 -> n48	 [pos="e,983,8697.7 983,8745.1 983,8733.1 983,8720.3 983,8708"];
+	n52	 [height=1.6303,
+		label="Node52\ninput = {torch.CudaTensor[1x1024x8x8]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x1024x8x8]}",
+		pos="429,3381",
+		tooltip="[[C]]:-1_",
+		width=5.5097];
+	n52 -> n49	 [pos="e,424.66,3285.7 426.33,3322.1 425.94,3313.5 425.53,3304.7 425.13,3295.9"];
+	n53 -> n50	 [pos="e,424.2,8059.7 421.81,8096.1 422.37,8087.5 422.96,8078.7 423.53,8069.9"];
+	n54	 [height=1.6303,
+		label="Node54\ninput = {torch.CudaTensor[1x64x2x2]}\lmodule = cudnn.SpatialFullConvolution(64 -> 128, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x128x4x4]}",
+		pos="983,8969",
+		tooltip="[[C]]:-1_",
+		width=7.3969];
+	n54 -> n51	 [pos="e,983,8862.7 983,8910.1 983,8898.1 983,8885.3 983,8873"];
+	n55	 [height=1.9249,
+		label="Node55\ninput = {torch.CudaTensor[1x512x8x8],torch.CudaTensor[1x512x8x8]}\lmapindex = {Node57,Node58}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x1024x8x8]}",
+		pos="433,3546",
+		tooltip="[[C]]:-1_",
+		width=8.0879];
+	n55 -> n52	 [pos="e,430.42,3439.8 431.32,3476.3 431.1,3467.6 430.88,3458.6 430.67,3449.9"];
+	n56	 [height=1.6303,
+		label="Node56\ninput = {torch.CudaTensor[1x64x2x2]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x64x2x2]}",
+		pos="983,9123",
+		tooltip="[[C]]:-1_",
+		width=5.257];
+	n56 -> n54	 [pos="e,983,9027.7 983,9064.1 983,9055.5 983,9046.7 983,9037.9"];
+	n57	 [height=1.6303,
+		label="Node57\ninput = {torch.CudaTensor[1x512x8x8]}\lmodule = nn.Dropout(0.500000)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x8x8]}",
+		pos="440,3711",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n57 -> n55	 [pos="e,435.93,3615.3 437.51,3652.1 437.14,3643.4 436.75,3634.4 436.37,3625.4"];
+	n58	 [height=1.9249,
+		label="Node58\ngradOutputBuffer = torch.CudaTensor[1x512x8x8]\linput = {torch.CudaTensor[1x512x8x8]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x8x8],torch.CudaTensor[1x512x8x8]}",
+		pos="457,7352",
+		tooltip="[[C]]:-1_",
+		width=8.7551];
+	n58 -> n55	 [pos="e,291.92,3606.7 317.06,7289.8 296.79,7277.2 277.31,7262.6 261,7246 186.72,7170.5 152,7139.9 152,7034 152,7034 152,7034 152,3864 \
+152,3762.5 169.29,3727.6 237,3652 250.39,3637 266.42,3623.8 283.47,3612.3"];
+	n72	 [height=1.6303,
+		label="Node72\ninput = {torch.CudaTensor[1x512x8x8]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x8x8]}",
+		pos="464,7187",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n58 -> n72	 [pos="e,461.52,7245.8 459.95,7282.3 460.32,7273.6 460.71,7264.6 461.08,7255.9"];
+	n59	 [height=1.6303,
+		label="Node59\ninput = {torch.CudaTensor[1x1x1x1]}\lmodule = cudnn.SpatialFullConvolution(1 -> 64, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x64x2x2]}",
+		pos="982,9288",
+		tooltip="[[C]]:-1_",
+		width=7.1443];
+	n59 -> n56	 [pos="e,982.65,9181.7 982.36,9229.1 982.43,9217.1 982.51,9204.3 982.58,9192"];
+	n60	 [height=1.6303,
+		label="Node60\ninput = {torch.CudaTensor[1x512x8x8]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x512x8x8]}",
+		pos="453,3865",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n60 -> n57	 [pos="e,444.94,3769.7 448.05,3806.1 447.32,3797.5 446.56,3788.7 445.81,3779.9"];
+	n61	 [height=1.6303,
+		label="Node61\ninput = {torch.CudaTensor[1x512x16x16]}\lmodule = cudnn.SpatialConvolution(512 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x8x8]}",
+		pos="450,7517",
+		tooltip="[[C]]:-1_",
+		width=7.0968];
+	n61 -> n58	 [pos="e,454.07,7421.3 452.49,7458.1 452.86,7449.4 453.25,7440.4 453.63,7431.4"];
+	n62 -> n59	 [pos="e,982,9346.7 982,9394.1 982,9382.1 982,9369.3 982,9357"];
+	n63	 [height=1.6303,
+		label="Node63\ninput = {torch.CudaTensor[1x1024x4x4]}\lmodule = cudnn.SpatialFullConvolution(1024 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x8x8]}",
+		pos="460,4019",
+		tooltip="[[C]]:-1_",
+		width=7.6733];
+	n63 -> n60	 [pos="e,455.66,3923.7 457.33,3960.1 456.94,3951.5 456.53,3942.7 456.13,3933.9"];
+	n64 -> n61	 [pos="e,448.48,7575.7 447.52,7612.1 447.75,7603.5 447.98,7594.7 448.21,7585.9"];
+	n65	 [height=1.6303,
+		label="Node65\ninput = {torch.CudaTensor[1x1024x4x4]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x1024x4x4]}",
+		pos="467,4173",
+		tooltip="[[C]]:-1_",
+		width=5.5097];
+	n65 -> n63	 [pos="e,462.66,4077.7 464.33,4114.1 463.94,4105.5 463.53,4096.7 463.13,4087.9"];
+	n66	 [height=1.9249,
+		label="Node66\ninput = {torch.CudaTensor[1x512x4x4],torch.CudaTensor[1x512x4x4]}\lmapindex = {Node67,Node68}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x1024x4x4]}",
+		pos="471,4338",
+		tooltip="[[C]]:-1_",
+		width=8.0879];
+	n66 -> n65	 [pos="e,468.42,4231.8 469.32,4268.3 469.1,4259.6 468.88,4250.6 468.67,4241.9"];
+	n67	 [height=1.6303,
+		label="Node67\ninput = {torch.CudaTensor[1x512x4x4]}\lmodule = nn.Dropout(0.500000)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x4x4]}",
+		pos="478,4503",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n67 -> n66	 [pos="e,473.93,4407.3 475.51,4444.1 475.14,4435.4 474.75,4426.4 474.37,4417.4"];
+	n68	 [height=1.9249,
+		label="Node68\ngradOutputBuffer = torch.CudaTensor[1x512x4x4]\linput = {torch.CudaTensor[1x512x4x4]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x4x4],torch.CudaTensor[1x512x4x4]}",
+		pos="495,6868",
+		tooltip="[[C]]:-1_",
+		width=8.7551];
+	n68 -> n66	 [pos="e,329.92,4398.7 356.85,6805.7 336.69,6793.1 317.27,6778.5 301,6762 226.31,6686.3 190,6656.4 190,6550 190,6550 190,6550 190,4656 \
+190,4554.5 207.29,4519.6 275,4444 288.39,4429 304.42,4415.8 321.47,4404.3"];
+	n80	 [height=1.6303,
+		label="Node80\ninput = {torch.CudaTensor[1x512x4x4]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x4x4]}",
+		pos="504,6703",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n68 -> n80	 [pos="e,500.81,6761.8 498.79,6798.3 499.27,6789.6 499.77,6780.6 500.25,6771.9"];
+	n69	 [height=1.6303,
+		label="Node69\ninput = {torch.CudaTensor[1x512x4x4]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x512x4x4]}",
+		pos="491,4657",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n69 -> n67	 [pos="e,482.94,4561.7 486.05,4598.1 485.32,4589.5 484.56,4580.7 483.81,4571.9"];
+	n70	 [height=1.6303,
+		label="Node70\ninput = {torch.CudaTensor[1x512x8x8]}\lmodule = cudnn.SpatialConvolution(512 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x4x4]}",
+		pos="478,7033",
+		tooltip="[[C]]:-1_",
+		width=7.0968];
+	n70 -> n68	 [pos="e,487.87,6937.3 484.04,6974.1 484.94,6965.4 485.88,6956.4 486.82,6947.4"];
+	n71	 [height=1.6303,
+		label="Node71\ninput = {torch.CudaTensor[1x1024x2x2]}\lmodule = cudnn.SpatialFullConvolution(1024 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x4x4]}",
+		pos="498,4811",
+		tooltip="[[C]]:-1_",
+		width=7.6733];
+	n71 -> n69	 [pos="e,493.66,4715.7 495.33,4752.1 494.94,4743.5 494.53,4734.7 494.13,4725.9"];
+	n72 -> n70	 [pos="e,472.68,7091.7 469.33,7128.1 470.12,7119.5 470.94,7110.7 471.75,7101.9"];
+	n73	 [height=1.6303,
+		label="Node73\ninput = {torch.CudaTensor[1x1024x2x2]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x1024x2x2]}",
+		pos="505,4965",
+		tooltip="[[C]]:-1_",
+		width=5.5097];
+	n73 -> n71	 [pos="e,500.66,4869.7 502.33,4906.1 501.94,4897.5 501.53,4888.7 501.13,4879.9"];
+	n74	 [height=1.9249,
+		label="Node74\ninput = {torch.CudaTensor[1x512x2x2],torch.CudaTensor[1x512x2x2]}\lmapindex = {Node75,Node76}\lmodule = nn.JoinTable\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x1024x2x2]}",
+		pos="509,5130",
+		tooltip="[[C]]:-1_",
+		width=8.0879];
+	n74 -> n73	 [pos="e,506.42,5023.8 507.32,5060.3 507.1,5051.6 506.88,5042.6 506.67,5033.9"];
+	n75	 [height=1.6303,
+		label="Node75\ninput = {torch.CudaTensor[1x512x2x2]}\lmodule = nn.Dropout(0.500000)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x2x2]}",
+		pos="527,5295",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n75 -> n74	 [pos="e,516.55,5199.3 520.6,5236.1 519.65,5227.4 518.65,5218.4 517.66,5209.4"];
+	n76	 [height=1.9249,
+		label="Node76\ngradOutputBuffer = torch.CudaTensor[1x512x2x2]\linput = {torch.CudaTensor[1x512x2x2]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x2x2],torch.CudaTensor[1x512x2x2]}",
+		pos="533,6384",
+		tooltip="[[C]]:-1_",
+		width=8.7551];
+	n76 -> n74	 [pos="e,370.01,5191.3 391.14,6321.9 373.07,6309.5 356.28,6294.9 343,6278 282.61,6201.2 285,6163.7 285,6066 285,6066 285,6066 285,5448 \
+285,5352.2 268.47,5314.1 324,5236 334.38,5221.4 347.48,5208.6 361.88,5197.3"];
+	n84	 [height=1.6303,
+		label="Node84\ninput = {torch.CudaTensor[1x512x2x2]}\lmodule = nn.LeakyReLU(0.2)\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x2x2]}",
+		pos="546,6219",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n76 -> n84	 [pos="e,541.39,6277.8 538.48,6314.3 539.17,6305.6 539.89,6296.6 540.59,6287.9"];
+	n77	 [height=1.6303,
+		label="Node77\ninput = {torch.CudaTensor[1x512x2x2]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x512x2x2]}",
+		pos="548,5449",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n77 -> n75	 [pos="e,534.98,5353.7 540,5390.1 538.82,5381.5 537.59,5372.7 536.38,5363.9"];
+	n78	 [height=1.6303,
+		label="Node78\ninput = {torch.CudaTensor[1x512x4x4]}\lmodule = cudnn.SpatialConvolution(512 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x2x2]}",
+		pos="523,6549",
+		tooltip="[[C]]:-1_",
+		width=7.0968];
+	n78 -> n76	 [pos="e,528.81,6453.3 526.55,6490.1 527.08,6481.4 527.64,6472.4 528.19,6463.4"];
+	n79	 [height=1.6303,
+		label="Node79\ninput = {torch.CudaTensor[1x512x1x1]}\lmodule = cudnn.SpatialFullConvolution(512 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x2x2]}",
+		pos="585,5603",
+		tooltip="[[C]]:-1_",
+		width=7.5351];
+	n79 -> n77	 [pos="e,562.05,5507.7 570.91,5544.1 568.8,5535.4 566.61,5526.5 564.46,5517.6"];
+	n80 -> n78	 [pos="e,515.78,6607.7 511.24,6644.1 512.31,6635.5 513.42,6626.7 514.51,6617.9"];
+	n81	 [height=1.6303,
+		label="Node81\ninput = {torch.CudaTensor[1x512x1x1]}\lmodule = cudnn.ReLU\lreverseMap = {}\lgradOutput = {torch.CudaTensor[1x512x1x1]}",
+		pos="578,5757",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n81 -> n79	 [pos="e,582.34,5661.7 580.67,5698.1 581.06,5689.5 581.47,5680.7 581.87,5671.9"];
+	n82	 [height=1.6303,
+		label="Node82\ninput = {torch.CudaTensor[1x512x1x1]}\lmodule = cudnn.SpatialBatchNormalization\lreverseMap = {}\lgradOutput = {torch.CudaTensor[\
+1x512x1x1]}",
+		pos="575,5911",
+		tooltip="[[C]]:-1_",
+		width=5.3952];
+	n82 -> n81	 [pos="e,576.86,5815.7 576.14,5852.1 576.31,5843.5 576.49,5834.7 576.66,5825.9"];
+	n83	 [height=1.6303,
+		label="Node83\ninput = {torch.CudaTensor[1x512x2x2]}\lmodule = cudnn.SpatialConvolution(512 -> 512, 4x4, 2,2, 1,1)\lreverseMap = {}\lgradOutput = {\
+torch.CudaTensor[1x512x1x1]}",
+		pos="573,6065",
+		tooltip="[[C]]:-1_",
+		width=7.0968];
+	n83 -> n82	 [pos="e,574.24,5969.7 573.76,6006.1 573.87,5997.5 573.99,5988.7 574.11,5979.9"];
+	n84 -> n83	 [pos="e,562.74,6123.7 556.28,6160.1 557.82,6151.4 559.42,6142.5 560.99,6133.6"];
+}

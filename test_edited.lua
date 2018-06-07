@@ -9,12 +9,7 @@ require 'nn'
 require 'nngraph'
 util = paths.dofile('util/util.lua')
 torch.setdefaulttensortype('torch.FloatTensor')
-<<<<<<< HEAD
 require 'models'
-=======
-require 'models_n16'
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
--- require 'distributions'
 
 opt = {
     DATA_ROOT = '',           -- path to images (should have subfolders 'train', 'val', etc)
@@ -106,6 +101,9 @@ local fake_AB = torch.Tensor(opt.batchSize, output_nc + input_nc*opt.condition_G
 print('checkpoints_dir', opt.checkpoints_dir)
 local netG = util.load(paths.concat(opt.checkpoints_dir, opt.netG_name .. '.t7'), opt)
 local netD = util.load(paths.concat(opt.checkpoints_dir, opt.netD_name .. '.t7'), opt)
+-- print('asdsads')
+-- print(netD)
+--netG:evaluate()
 local parametersG, gradParametersG = netG:getParameters()
 print(netG)
 
@@ -116,7 +114,6 @@ function TableConcat(t1,t2)
     end
     return t1
 end
-
 
 if opt.gpu > 0 then
    print('transferring to gpu...')
@@ -131,7 +128,7 @@ if opt.gpu > 0 then
    netD:cuda(); netG:cuda(); criterion:cuda(); criterionAE:cuda();
    print('done')
 else
-    print('running model on CPU')
+	print('running model on CPU')
 end
 
 -- create closure to evaluate f(X) and df/dX of generator
@@ -144,14 +141,14 @@ local fGx = function(x)
     -- GAN loss
     local df_dg = torch.zeros(Generator_out:size())
     if opt.gpu>0 then 
-        df_dg = df_dg:cuda();
+    	df_dg = df_dg:cuda();
     end
     
     if opt.use_GAN==1 then
        local output = netD:forward(fake_AB)
        local label = torch.FloatTensor(output:size()):fill(real_label) -- fake labels are real for generator cost as we need to minimize the cost  when output-label is done
        if opt.gpu>0 then 
-        label = label:cuda();
+       	label = label:cuda();
        end
        errG = criterion:forward(output, label)
        
@@ -164,7 +161,7 @@ local fGx = function(x)
     -- unary loss
     local df_do_AE = torch.zeros(Generator_out:size())
     if opt.gpu>0 then 
-        df_do_AE = df_do_AE:cuda();
+    	df_do_AE = df_do_AE:cuda();
     end
     if opt.use_L1==1 then
        errL1 = criterionAE:forward(Generator_out, target)
@@ -186,7 +183,6 @@ end
 opt.how_many=math.min(opt.how_many, data:size())
 
 local filepaths = {} -- paths to images tested on
-local errors = {}
 for n=1,math.floor(opt.how_many/opt.batchSize) do
     print('processing batch ' .. n)
     
@@ -202,30 +198,19 @@ for n=1,math.floor(opt.how_many/opt.batchSize) do
     if opt.gpu > 0 then
         input = input:cuda()
     end
-
+    
     if opt.preprocess == 'colorization' then
-       local output_AB = netG:forward({n, input}):float()
+       local output_AB = netG:forward(input):float()
        local input_L = input:float() 
        output = util.deprocessLAB_batch(input_L, output_AB)
        local target_AB = target:float()
        target = util.deprocessLAB_batch(input_L, target_AB)
        input = util.deprocessL_batch(input_L)
     else 
-        -- if (n==1)  then
-        --   Generator_out = netG:forward({noise, input})
-        --   gen_out_old = Generator_out
-        -- -- optim.adam(fGx, parametersG, optimStateG)
-        -- else
-        --   
-        --   print(Generator_out-gen_out_old)
-        --   gen_out_old = Generator_out
-        -- end 
         Generator_out = netG:forward(input)
-        -- print(noise_out:size())
-        -- disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id, title=opt.name .. 'difference'})
-        -- disp.image()
-                 
         fake_AB = torch.cat(input,Generator_out,2)
+        optim.adam(fGx, parametersG, optimStateG)
+        
         output = util.deprocess_batch(Generator_out)
         input = util.deprocess_batch(input):float()
         output = output:float()
@@ -259,7 +244,6 @@ for n=1,math.floor(opt.how_many/opt.batchSize) do
     end
     
     filepaths = TableConcat(filepaths, filepaths_curr)
-    errors[#errors+1] = errG
 
     print(('Err_G: %.4f' ):format(errG))
 end
@@ -273,15 +257,11 @@ io.write('<tr><td>Image #</td><td>Input</td><td>Output</td><td>Ground Truth</td>
 for i=1, #filepaths do
     io.write('<tr>')
     io.write('<td>' .. filepaths[i] .. '</td>')
-    io.write('<td>' .. errors[i] .. '</td>')
+    io.write('<td>' .. errG .. '</td>')
     io.write('<td><img src="./images/input/' .. filepaths[i] .. '"/></td>')
     io.write('<td><img src="./images/output/' .. filepaths[i] .. '"/></td>')
     io.write('<td><img src="./images/target/' .. filepaths[i] .. '"/></td>')
     io.write('</tr>')
 end
 
-<<<<<<< HEAD
 io.write('</table>')
-=======
-io.write('</table>')
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4

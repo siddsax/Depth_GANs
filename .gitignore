@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 checkpoints
 nyu
 Datasets
@@ -9,3 +10,8 @@ train_chain
 New
 .nfs000000001392063c00000007
 .nfs*
+=======
+datasets/
+results/
+checkpoints/
+>>>>>>> 2532dc7501654372bccd8211abea941492d18ca4

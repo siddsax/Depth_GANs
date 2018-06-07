@@ -1,9 +1,11 @@
 require 'nngraph'
+-- nngraph.setDebug(true)
 
 function defineG_encoder_decoder(input_nc, output_nc, ngf)
     local netG = nil 
-    -- input is (nc) x 256 x 256
-    local e1 = - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
+    local e0 = - nn.SpatialConvolution(input_nc, input_nc, 2, 1, 1, 1, 0, 0)
+    -- -- input is (nc) x 256 x 256
+    local e1 = e0 - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
     -- input is (ngf) x 128 x 128
     local e2 = e1 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf, ngf * 2, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 2)
     -- input is (ngf * 2) x 64 x 64
@@ -39,61 +41,107 @@ function defineG_encoder_decoder(input_nc, output_nc, ngf)
     
     local o1 = d8 - nn.Tanh()
     
-    netG = nn.gModule({e1},{o1})
+    netG = nn.gModule({e0},{o1})
 
     return netG
 end
 
 function defineG_unet(input_nc, output_nc, ngf)
     local netG = nil
+    -- input is (ngf) x 256 x 256
+    local n1 = - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
+    -- input is (ngf) x 128 x 128
+    local n2 = n1 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf, ngf * 2, 4, 4, 2, 2, 1, 1)  
+    -- - nn.SpatialBatchNormalization(ngf * 2)
+    -- input is (ngf * 4) x 64 x 64
+    local n3 = n2 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 2, ngf * 4, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 4)  
+    -- input is (ngf * 4) x 32 x 32
+    local n4 = n3 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 4, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 4) x 64 x 64
+    local n5 = n4 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 8) x 8 x 8
+    local n6 = n5 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 8) x 4 x 4
+    local n7 = n6 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 8) x 2 x 2
+    local n8 = n7 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) -- 15
+    -- - nn.SpatialBatchNormalization(ngf * 8)
+    -- input is (ngf * 8) x 1 x 1
+
     -- input is (nc) x 256 x 256
     local e1 = - nn.SpatialConvolution(input_nc, ngf, 4, 4, 2, 2, 1, 1)
     -- input is (ngf) x 128 x 128
-    local e2 = e1 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf, ngf * 2, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 2)
+    local e2 = e1 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf, ngf * 2, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 2)
     -- input is (ngf * 2) x 64 x 64
-    local e3 = e2 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 2, ngf * 4, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 4)
+    local e3 = e2 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 2, ngf * 4, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 4)
     -- input is (ngf * 4) x 32 x 32
-    local e4 = e3 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 4, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e4 = e3 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 4, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 16 x 16
-    local e5 = e4 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e5 = e4 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 8 x 8
-    local e6 = e5 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e6 = e5 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 4 x 4
-    local e7 = e6 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e7 = e6 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 2 x 2
-    local e8 = e7 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e8 = e7 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) --30
+    -- - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 1 x 1
-    
-    local d1_ = e8 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+
+
+    local ne = {n8,e8} - nn.JoinTable(2) --31
+    -- local ne = {n6,e8} - nn.CAddTable()
+    local d1_ = ne - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8*2, ngf * 8, 4, 4, 2, 2, 1, 1) --33
+    -- - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 2 x 2
-    local d1 = {d1_,e7} - nn.JoinTable(2)
-    local d2_ = d1 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+    
+    local d1 = {d1_,e7,n7} - nn.JoinTable(2)
+    local d2_ = d1 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 3, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 4 x 4
-    local d2 = {d2_,e6} - nn.JoinTable(2)
-    local d3_ = d2 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+
+    local d2 = {d2_,e6,n6} - nn.JoinTable(2)
+    local d3_ = d2 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 3, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 8 x 8
-    local d3 = {d3_,e5} - nn.JoinTable(2)
-    local d4_ = d3 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+
+    local d3 = {d3_,e5,n5} - nn.JoinTable(2)
+    local d4_ = d3 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 3, ngf * 8, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 16 x 16
-    local d4 = {d4_,e4} - nn.JoinTable(2)
-    local d5_ = d4 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 4, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 4)
+
+    local d4 = {d4_,e4,n4} - nn.JoinTable(2)
+    local d5_ = d4 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 3, ngf * 4, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 4)
     -- input is (ngf * 4) x 32 x 32
-    local d5 = {d5_,e3} - nn.JoinTable(2)
-    local d6_ = d5 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 4 * 2, ngf * 2, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 2)
+
+    local d5 = {d5_,e3,n3} - nn.JoinTable(2)
+    local d6_ = d5 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 4 * 3, ngf * 2, 4, 4, 2, 2, 1, 1) 
+    -- - nn.SpatialBatchNormalization(ngf * 2)
     -- input is (ngf * 2) x 64 x 64
-    local d6 = {d6_,e2} - nn.JoinTable(2)
-    local d7_ = d6 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 2 * 2, ngf, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf)
+
+    local d6 = {d6_,e2,n2} - nn.JoinTable(2)
+    local d7_ = d6 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 2 * 3, ngf, 4, 4, 2, 2, 1, 1) --51
+    -- - nn.SpatialBatchNormalization(ngf)
     -- input is (ngf) x128 x 128
-    local d7 = {d7_,e1} - nn.JoinTable(2)
-    local d8 = d7 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 2, output_nc, 4, 4, 2, 2, 1, 1)
+
+    local d7 = {d7_,e1,n1} - nn.JoinTable(2)--76 / 55?52
+    local d8 = d7 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 3, output_nc, 4, 4, 2, 2, 1, 1)
     -- input is (nc) x 256 x 256
-    
+
     local o1 = d8 - nn.Tanh()
-    
-    netG = nn.gModule({e1},{o1})
-    
-    --graph.dot(netG.fg,'netG')
-    
+    netG = nn.gModule({n1,e1},{o1})
+    -- graph.dot(netG.fg, 'graph', 'graph')
     return netG
 end
 
@@ -109,20 +157,20 @@ function defineG_unet_128(input_nc, output_nc, ngf)
     -- input is (ngf * 4) x 16 x 16
     local e4 = e3 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 4, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 8 x 8
---    local e5 = e4 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e5 = e4 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 4 x 4
---    local e6 = e5 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e6 = e5 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 2 x 2
---    local e7 = e6 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
+    local e7 = e6 - nn.LeakyReLU(0.2, true) - nn.SpatialConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8)
     -- input is (ngf * 8) x 1 x 1
     
---    local d1_ = e7 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+    local d1_ = e7 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 2 x 2
---    local d1 = {d1_,e6} - nn.JoinTable(2)
---    local d2_ = d1 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+    local d1 = {d1_,e6} - nn.JoinTable(2)
+    local d2_ = d1 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 4 x 4
---    local d2 = {d2_,e5} - nn.JoinTable(2)
---    local d3_ = d2 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
+    local d2 = {d2_,e5} - nn.JoinTable(2)
+    local d3_ = d2 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 8, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 8) - nn.Dropout(0.5)
     -- input is (ngf * 8) x 8 x 8
     local d3 = {d3_,e4} - nn.JoinTable(2)
     local d4_ = d3 - nn.ReLU(true) - nn.SpatialFullConvolution(ngf * 8 * 2, ngf * 4, 4, 4, 2, 2, 1, 1) - nn.SpatialBatchNormalization(ngf * 4)

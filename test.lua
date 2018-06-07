@@ -9,11 +9,7 @@ require 'nn'
 require 'nngraph'
 util = paths.dofile('util/util.lua')
 torch.setdefaulttensortype('torch.FloatTensor')
-<<<<<<< HEAD
 require 'models'
-=======
-require 'models_n16'
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 -- require 'distributions'
 
 opt = {
@@ -280,8 +276,4 @@ for i=1, #filepaths do
     io.write('</tr>')
 end
 
-<<<<<<< HEAD
 io.write('</table>')
-=======
-io.write('</table>')
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4

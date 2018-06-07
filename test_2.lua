@@ -9,12 +9,25 @@ require 'nn'
 require 'nngraph'
 util = paths.dofile('util/util.lua')
 torch.setdefaulttensortype('torch.FloatTensor')
-<<<<<<< HEAD
 require 'models'
-=======
-require 'models_n16'
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 -- require 'distributions'
+
+local function weights_init(m)
+   local name = torch.type(m)
+   if name:find('Convolution') then
+    -- a weight with points extracted from a normal distribution of mean 0.0 and co-variance .02 irrespective of dimensions
+      m.weight:normal(0.0, 0.02)
+    -- a bias with only zero as a number irrespective of dimensions 
+      m.bias:fill(0)
+-- 
+-- SOMETHING CALLED BATCHNORMALIZATION 
+-- 
+   elseif name:find('BatchNormalization') then
+      if m.weight then m.weight:normal(1.0, 0.02) end
+      if m.bias then m.bias:fill(0) end
+   end
+end
+
 
 opt = {
     DATA_ROOT = '',           -- path to images (should have subfolders 'train', 'val', etc)
@@ -46,7 +59,8 @@ opt = {
     use_GAN = 1
 }
 
-
+local ngf =3 
+local ndf =3 
 -- one-line argument parser. parses enviroment variables to override the defaults
 for k,v in pairs(opt) do opt[k] = tonumber(os.getenv(k)) or os.getenv(k) or opt[k] end
 opt.nThreads = 1 -- test only works with 1 thread...
@@ -104,10 +118,16 @@ local Generator_out = torch.FloatTensor(opt.batchSize,3,opt.fineSize,opt.fineSiz
 local fake_AB = torch.Tensor(opt.batchSize, output_nc + input_nc*opt.condition_GAN, opt.fineSize, opt.fineSize)
 
 print('checkpoints_dir', opt.checkpoints_dir)
+-- print('checkpoints_dir', opt.checkpoints_dir)
 local netG = util.load(paths.concat(opt.checkpoints_dir, opt.netG_name .. '.t7'), opt)
 local netD = util.load(paths.concat(opt.checkpoints_dir, opt.netD_name .. '.t7'), opt)
+-- local netG = defineG_unet(input_nc, output_nc, ngf)
+-- local netD = defineD_basic(input_nc, output_nc, ndf)
+-- -- netG:apply(weights_init)
+-- -- netD:apply(weights_init)
 local parametersG, gradParametersG = netG:getParameters()
 print(netG)
+-- takes in number of input/output channels  and number of filters in first convo layer
 
 
 function TableConcat(t1,t2)
@@ -196,12 +216,50 @@ for n=1,math.floor(opt.how_many/opt.batchSize) do
     
     input = data_curr[{ {}, idx_A, {}, {} }]
     target = data_curr[{ {}, idx_B, {}, {} }]
-    -- Generator_out = netG:forward(input)
+    -- -- Generator_out = netG:forward(input)
     
-    
+    --       netOut = netG:get(63).output      
+
+    --       disp.image(util.scaleBatch(noise_out,100,100),{win=opt.display_id, title='noise_out'})
     if opt.gpu > 0 then
         input = input:cuda()
     end
+    noise = torch.zeros(1,1,16,16)
+    local y = 1
+    local z = 1
+
+    while y<17 do
+      z=1
+      while z<17 do 
+        noise[{1,1,z,y}] = torch.uniform()*256
+        z = z+1
+       end 
+      y = y + 1
+    end  
+    if opt.gpu>0 then 
+      noise = noise:cuda();
+    end
+    -- print(sample:size())
+    -- created fake using real_A as input
+    -- fake_B = netG:forward({n, input})
+    
+    -- input_noisy = torch.cat(input,sample,4)
+    -- print(real_A:size())
+    -- print(sample:size())
+    -- created fake using real_A as input
+    
+    -- -- print(input:size())
+    -- local netOut = torch.FloatTensor(opt.batchSize,3,opt.fineSize,opt.fineSize)
+    -- netOut = Generator_out:cuda();
+
+    -- local noise_out = torch.FloatTensor(opt.batchSize,3,opt.fineSize,opt.fineSize)
+    -- noise_out = Generator_out:cuda();
+
+    -- local noise_out_old = torch.FloatTensor(opt.batchSize,3,opt.fineSize,opt.fineSize)
+    -- -- noise_out_old = Generator_out:cuda();
+
+    -- local gen_out_old = torch.FloatTensor(opt.batchSize,3,opt.fineSize,opt.fineSize)
+    -- -- gen_out_old = Generator_out:cuda();
 
     if opt.preprocess == 'colorization' then
        local output_AB = netG:forward({n, input}):float()
@@ -211,29 +269,44 @@ for n=1,math.floor(opt.how_many/opt.batchSize) do
        target = util.deprocessLAB_batch(input_L, target_AB)
        input = util.deprocessL_batch(input_L)
     else 
-        -- if (n==1)  then
-        --   Generator_out = netG:forward({noise, input})
-        --   gen_out_old = Generator_out
-        -- -- optim.adam(fGx, parametersG, optimStateG)
-        -- else
-        --   
-        --   print(Generator_out-gen_out_old)
-        --   gen_out_old = Generator_out
-        -- end 
-        Generator_out = netG:forward(input)
-        -- print(noise_out:size())
-        -- disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id, title=opt.name .. 'difference'})
-        -- disp.image()
+        if (n==1)  then
+          print("Hello from the inside")
+          Generator_out = netG:forward({noise, input})
+          Generator_out_f = Generator_out:float()
+          netOut = netG:get(65).output
+          gen_out_old = Generator_out_f
+          noise_out = util.normalize(netOut:float())
+          noise_out_old = noise_out
+        -- optim.adam(fGx, parametersG, optimStateG)
+        else
+          Generator_out = netG:forward({noise, input})
+          Generator_out_f = Generator_out:float()
+          netOut = netG:get(65).output      
+          noise_out = util.normalize(netOut:float())
+          a = noise_out-noise_out_old
+          b = Generator_out_f-gen_out_old
+          disp.image(util.scaleBatch(a,100,100),{win=opt.display_id, title='noise difference'})
+          disp.image(util.scaleBatch(b,100,100),{win=opt.display_id+1, title='Generator difference'})
+          noise_out_old = noise_out
+          gen_out_old = Generator_out_f
+        end 
+
+        -- netOut = netG:get(63).output
+        -- noise_out = util.normalize(netOut:float())
+        -- print(noise_out)
                  
         fake_AB = torch.cat(input,Generator_out,2)
         output = util.deprocess_batch(Generator_out)
+        noise_out = util.deprocess_batch(noise_out)
         input = util.deprocess_batch(input):float()
         output = output:float()
+        noise_out = noise_out:float()
         target = util.deprocess_batch(target):float()
     end
     paths.mkdir(paths.concat(opt.results_dir, opt.netG_name .. '_' .. opt.phase))
     local image_dir = paths.concat(opt.results_dir, opt.netG_name .. '_' .. opt.phase, 'images')
     paths.mkdir(image_dir)
+    paths.mkdir(paths.concat(image_dir,'noise_out'))
     paths.mkdir(paths.concat(image_dir,'input'))
     paths.mkdir(paths.concat(image_dir,'output'))
     paths.mkdir(paths.concat(image_dir,'target'))
@@ -241,6 +314,7 @@ for n=1,math.floor(opt.how_many/opt.batchSize) do
     -- print(output:size())
     -- print(target:size())
     for i=1, opt.batchSize do
+        image.save(paths.concat(image_dir,'noise_out',filepaths_curr[i]), image.scale(noise_out[i],noise_out[i]:size(2),noise_out[i]:size(3)/opt.aspect_ratio))      
         image.save(paths.concat(image_dir,'input',filepaths_curr[i]), image.scale(input[i],input[i]:size(2),input[i]:size(3)/opt.aspect_ratio))
         image.save(paths.concat(image_dir,'output',filepaths_curr[i]), image.scale(output[i],output[i]:size(2),output[i]:size(3)/opt.aspect_ratio))
         image.save(paths.concat(image_dir,'target',filepaths_curr[i]), image.scale(target[i],target[i]:size(2),target[i]:size(3)/opt.aspect_ratio))
@@ -250,9 +324,14 @@ for n=1,math.floor(opt.how_many/opt.batchSize) do
     if opt.display then
       if opt.preprocess == 'regular' then
         disp = require 'display'
-        disp.image(util.scaleBatch(input,100,100),{win=opt.display_id, title='input'})
-        disp.image(util.scaleBatch(output,100,100),{win=opt.display_id+1, title='output'})
-        disp.image(util.scaleBatch(target,100,100),{win=opt.display_id+2, title='target'})
+        -- print(1)
+        disp.image(util.scaleBatch(noise_out,100,100),{win=opt.display_id+2, title='noise_out'})
+        -- print(2)
+        -- disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id, title=opt.name .. 'noise_out'})
+
+        disp.image(util.scaleBatch(input,100,100),{win=opt.display_id+3, title='input'})
+        disp.image(util.scaleBatch(output,100,100),{win=opt.display_id+4  , title='output'})
+        disp.image(util.scaleBatch(target,100,100),{win=opt.display_id+5, title='target'})
         
         print('Displayed images')
       end
@@ -274,14 +353,11 @@ for i=1, #filepaths do
     io.write('<tr>')
     io.write('<td>' .. filepaths[i] .. '</td>')
     io.write('<td>' .. errors[i] .. '</td>')
+    io.write('<td><img src="./images/noise_out/' .. filepaths[i] .. '"/></td>')
     io.write('<td><img src="./images/input/' .. filepaths[i] .. '"/></td>')
     io.write('<td><img src="./images/output/' .. filepaths[i] .. '"/></td>')
     io.write('<td><img src="./images/target/' .. filepaths[i] .. '"/></td>')
     io.write('</tr>')
 end
 
-<<<<<<< HEAD
 io.write('</table>')
-=======
-io.write('</table>')
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4

@@ -8,13 +8,9 @@ require 'nn'
 require 'optim'
 util = paths.dofile('util/util.lua')
 require 'image'
-<<<<<<< HEAD
-require 'models'
-=======
 require 'models_n1'
 -- require 'distributions'
 -- nngraph.setDebug(true)
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 
 
 opt = {
@@ -26,42 +22,25 @@ opt = {
    ndf = 64,               -- #  of discrim filters in first conv layer
    input_nc = 3,           -- #  of input image channels
    output_nc = 3,          -- #  of output image channels
-<<<<<<< HEAD
-   niter = 500,            -- #  of iter at starting learning rate
-=======
    niter = 100,            -- #  of iter at starting learning rate
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
    lr = 0.0002,            -- initial learning rate for adam
    beta1 = 0.5,            -- momentum term of adam
    ntrain = math.huge,     -- #  of examples per epoch. math.huge for full dataset
    flip = 1,               -- if flip the images for data argumentation
    display = 1,            -- display samples while training. 0 = false
    display_id = 10,        -- display window id.
-<<<<<<< HEAD
-   display_plot = 'errL1',    -- which loss values to plot over time. Accepted values include a comma seperated list of: errL1, errG, and errD
-=======
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
    gpu = 1,                -- gpu = 0 is CPU mode. gpu=X is GPU mode on GPU X
    name = '',              -- name of the experiment, should generally be passed on the command line
    which_direction = 'AtoB',    -- AtoB or BtoA
    phase = 'train',             -- train, val, test, etc
    preprocess = 'regular',      -- for special purpose preprocessing, e.g., for colorization, change this (selects preprocessing functions in util.lua)
    nThreads = 2,                -- # threads for loading data
-<<<<<<< HEAD
-   save_epoch_freq = 100000,        -- save a model every save_epoch_freq epochs (does not overwrite previously saved models)
-   save_latest_freq = 50000,     -- save the latest model every latest_freq sgd iterations (overwrites the previous latest model)
-   print_freq = 50,             -- print the debug information every print_freq iterations
-   display_freq = 10,          -- display the current results every display_freq iterations
-   save_display_freq = 50000,    -- save the current display of results every save_display_freq_iterations
-   continue_train=0,            -- if continue training, load the latest model: 1: true, 0: false
-=======
    save_epoch_freq = 100,        -- save a model every save_epoch_freq epochs (does not overwrite previously saved models)
    save_latest_freq = 500,     -- save the latest model every latest_freq sgd iterations (overwrites the previous latest model)
    print_freq = 50,             -- print the debug information every print_freq iterations
    display_freq = 2,          -- display the current results every display_freq iterations
    save_display_freq = 452,    -- save the current display of results every save_display_freq_iterations
-   continue_train		=0,            -- if continue training, load the latest model: 1: true, 0: false
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
+   continue_train   =0,            -- if continue training, load the latest model: 1: true, 0: false
    serial_batches = 0,          -- if 1, takes images in order to make batches, otherwise takes them randomly
    serial_batch_iter = 1,       -- iter into serial image list
    checkpoints_dir = './checkpoints', -- models are saved here
@@ -72,22 +51,14 @@ opt = {
    which_model_netD = 'basic', -- selects model to use for netD
    which_model_netG = 'unet',  -- selects model to use for netG
    n_layers_D = 0,             -- only used if which_model_netD=='n_layers'
-<<<<<<< HEAD
-   lambda = 10,               -- weight on L1 term in objective
-   alpha=1,
-=======
    lambda = 100,               -- weight on L1 term in objective INITIAL = 100
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 }
 
 -- one-line argument parser. parses enviroment variables to override the defaults
 for k,v in pairs(opt) do opt[k] = tonumber(os.getenv(k)) or os.getenv(k) or opt[k] end
 print(opt)
 
-<<<<<<< HEAD
-=======
 --  Saving the number of input channels and output channels
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 local input_nc = opt.input_nc
 local output_nc = opt.output_nc
 -- translation direction
@@ -106,11 +77,8 @@ end
 
 if opt.display == 0 then opt.display = false end
 
-<<<<<<< HEAD
-=======
 
 -- seedig to deetermine order of inputs
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 opt.manualSeed = torch.random(1, 10000) -- fix seed
 print("Random Seed: " .. opt.manualSeed)
 torch.manualSeed(opt.manualSeed)
@@ -127,10 +95,6 @@ tmp_d, tmp_paths = data:getBatch()
 local function weights_init(m)
    local name = torch.type(m)
    if name:find('Convolution') then
-<<<<<<< HEAD
-      m.weight:normal(0.0, 0.02)
-      m.bias:fill(0)
-=======
     -- a weight with points extracted from a normal distribution of mean 0.0 and co-variance .02 irrespective of dimensions
       m.weight:normal(0.0, 0.02)
     -- a bias with only zero as a number irrespective of dimensions 
@@ -138,37 +102,24 @@ local function weights_init(m)
 -- 
 -- SOMETHING CALLED BATCHNORMALIZATION 
 -- 
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
    elseif name:find('BatchNormalization') then
       if m.weight then m.weight:normal(1.0, 0.02) end
       if m.bias then m.bias:fill(0) end
    end
 end
 
-<<<<<<< HEAD
-
-=======
 -- number of filters in first convo layer (64 by default)
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 local ndf = opt.ndf
 local ngf = opt.ngf
 local real_label = 1
 local fake_label = 0
 
-<<<<<<< HEAD
-function defineG(input_nc, output_nc, ngf)
-    local netG = nil
-    if     opt.which_model_netG == "encoder_decoder" then netG = defineG_encoder_decoder(input_nc, output_nc, ngf)
-    elseif opt.which_model_netG == "unet" then netG = defineG_unet(input_nc, output_nc, ngf)
-    elseif opt.which_model_netG == "unet_128" then netG = defineG_unet_128(input_nc, output_nc, ngf)
-=======
 -- takes in number of input/output channels  and number of filters in first convo layer
 function defineG(input_nc, output_nc, ngf)
     local netG = nil
     if     opt.which_model_netG == "encoder_decoder" then netG = defineG_encoder_decoder(input_nc, output_nc, ngf)
 -- generator uses the "unet" model by default      
     elseif opt.which_model_netG == "unet" then netG = defineG_unet(input_nc, output_nc, ngf)
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     else error("unsupported netG model")
     end
    
@@ -184,11 +135,7 @@ function defineD(input_nc, output_nc, ndf)
     else
         input_nc_tmp = 0 -- only penalizes structure in output channels
     end
-<<<<<<< HEAD
-    
-=======
 -- discriminator uses the "basic" model by default          
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     if     opt.which_model_netD == "basic" then netD = defineD_basic(input_nc_tmp, output_nc, ndf)
     elseif opt.which_model_netD == "n_layers" then netD = defineD_n_layers(input_nc_tmp, output_nc, ndf, opt.n_layers_D)
     else error("unsupported netD model")
@@ -216,22 +163,14 @@ end
 print(netG)
 print(netD)
 
-<<<<<<< HEAD
-
-=======
 -- Criterias for the networks
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 local criterion = nn.BCECriterion()
 local criterionAE = nn.AbsCriterion()
 ---------------------------------------------------------------------------
 optimStateG = {
-<<<<<<< HEAD
-   learningRate = opt.lr,
-=======
    -- learning rate of the optimizer
    learningRate = opt.lr,
    -- momentum of the adam optimizer
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
    beta1 = opt.beta1,
 }
 optimStateD = {
@@ -239,11 +178,6 @@ optimStateD = {
    beta1 = opt.beta1,
 }
 ----------------------------------------------------------------------------
-<<<<<<< HEAD
-local real_A = torch.Tensor(opt.batchSize, input_nc, opt.fineSize, opt.fineSize)
-local real_B = torch.Tensor(opt.batchSize, output_nc, opt.fineSize, opt.fineSize)
-local fake_B = torch.Tensor(opt.batchSize, output_nc, opt.fineSize, opt.fineSize)
-=======
 --   a tensor for 'batchSize' number of images with input_nc channels which is used to condition the gans (fineSize)X(fineSize)
 local real_A = torch.Tensor(opt.batchSize, input_nc, opt.fineSize, opt.fineSize) 
 --  a tensor for 'batchSize' number of images which are the real structured images.
@@ -251,7 +185,6 @@ local real_B = torch.Tensor(opt.batchSize, output_nc, opt.fineSize, opt.fineSize
 --  a tensor for 'batchSize' number of output images which aims to produce image like real_B using real_A
 local fake_B = torch.Tensor(opt.batchSize, output_nc, opt.fineSize, opt.fineSize)
 -- this one stores both real_A and real_B along the dimension 2
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 local real_AB = torch.Tensor(opt.batchSize, output_nc + input_nc*opt.condition_GAN, opt.fineSize, opt.fineSize)
 local fake_AB = torch.Tensor(opt.batchSize, output_nc + input_nc*opt.condition_GAN, opt.fineSize, opt.fineSize)
 local errD, errG, errL1 = 0, 0, 0
@@ -273,17 +206,10 @@ if opt.gpu > 0 then
    netD:cuda(); netG:cuda(); criterion:cuda(); criterionAE:cuda();
    print('done')
 else
-<<<<<<< HEAD
   print('running model on CPU')
 end
 
-
-=======
-	print('running model on CPU')
-end
-
 -- gradParameters are the stored (not calculated) values of the gradient and parameters are the values of weights and biases.
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 local parametersD, gradParametersD = netD:getParameters()
 local parametersG, gradParametersG = netG:getParameters()
 
@@ -292,17 +218,6 @@ local parametersG, gradParametersG = netG:getParameters()
 if opt.display then disp = require 'display' end
 
 
-<<<<<<< HEAD
-function createRealFake()
-    -- load real
-    data_tm:reset(); data_tm:resume()
-    local real_data, data_path = data:getBatch()
-    data_tm:stop()
-    
-    real_A:copy(real_data[{ {}, idx_A, {}, {} }])
-    real_B:copy(real_data[{ {}, idx_B, {}, {} }])
-    
-=======
 
 function createRealFake()
     -- load real
@@ -315,18 +230,11 @@ function createRealFake()
     real_A:copy(real_data[{ {}, idx_A, {}, {} }])
     real_B:copy(real_data[{ {}, idx_B, {}, {} }])
     -- real_A and real_B are added along dim 2
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     if opt.condition_GAN==1 then
         real_AB = torch.cat(real_A,real_B,2)
     else
         real_AB = real_B -- unconditional GAN, only penalizes structure in B
     end
-<<<<<<< HEAD
-    
-    -- create fake
-    fake_B = netG:forward(real_A)
-    
-=======
     -- mu = torch.zeros(256)
     -- sigma = 10000*torch.eye(256)
     
@@ -335,13 +243,13 @@ function createRealFake()
     -- local y = 1
     -- local z = 1
     -- while y<17 do
-    -- 	z=1
+    --  z=1
     --   while z<17 do 
-	   --    n[{1,1,z,y}] = torch.uniform()*256
-	   --    -- n[{1,2,z,y}] = torch.uniform()*256
-	   --    -- n[{1,3,z,y}] = torch.uniform()*256
-	   --    z = z+1
-	   --   end 
+     --    n[{1,1,z,y}] = torch.uniform()*256
+     --    -- n[{1,2,z,y}] = torch.uniform()*256
+     --    -- n[{1,3,z,y}] = torch.uniform()*256
+     --    z = z+1
+     --   end 
     --   y = y + 1
     -- end
     n[{1,1,1,1}] = torch.uniform()*256
@@ -362,17 +270,13 @@ function createRealFake()
     --   gen_out_old = netG:get(80).output
     -- end
     -- k = netG:forward({n,real_A})
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     if opt.condition_GAN==1 then
         fake_AB = torch.cat(real_A,fake_B,2)
     else
         fake_AB = fake_B -- unconditional GAN, only penalizes structure in B
     end
-<<<<<<< HEAD
-=======
     local predict_real = netD:forward(real_AB)  
     local predict_fake = netD:forward(fake_AB)
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 end
 
 -- create closure to evaluate f(X) and df/dX of discriminator
@@ -386,17 +290,7 @@ local fDx = function(x)
     local output = netD:forward(real_AB)
     local label = torch.FloatTensor(output:size()):fill(real_label)
     if opt.gpu>0 then 
-<<<<<<< HEAD
       label = label:cuda()
-    end
-    
-    local errD_real = criterion:forward(output, label)
-    local df_do = criterion:backward(output, label)
-    netD:backward(real_AB, df_do)
-    
-    -- Fake
-=======
-    	label = label:cuda()
     end
     -- Caclulate the error for misclassifying the real data points as fake
     local errD_real = criterion:forward(output, label)
@@ -407,7 +301,6 @@ local fDx = function(x)
     netD:backward(real_AB, df_do)
     
     -- Caclulate the error for misclassifying the fake data points as real
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     local output = netD:forward(fake_AB)
     label:fill(fake_label)
     local errD_fake = criterion:forward(output, label)
@@ -429,32 +322,18 @@ local fGx = function(x)
     -- GAN loss
     local df_dg = torch.zeros(fake_B:size())
     if opt.gpu>0 then 
-<<<<<<< HEAD
       df_dg = df_dg:cuda();
-=======
-    	df_dg = df_dg:cuda();
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     end
     
     if opt.use_GAN==1 then
        local output = netD.output -- netD:forward{input_A,input_B} was already executed in fDx, so save computation
-<<<<<<< HEAD
-       local label = torch.FloatTensor(output:size()):fill(real_label) -- fake labels are real for generator cost
-       if opt.gpu>0 then 
-        label = label:cuda();
-        end
-       errG = criterion:forward(output, label)
-       local df_do = criterion:backward(output, label)
-       df_dg = netD:updateGradInput(fake_AB, df_do):narrow(2,fake_AB:size(2)-output_nc+1, output_nc)
-=======
        local label = torch.FloatTensor(output:size()):fill(real_label) -- fake labels are real for generator cost as we need to minimize the cost  when output-label is done
        if opt.gpu>0 then 
-       	label = label:cuda();
+        label = label:cuda();
        end
        errG = criterion:forward(output, label)
        local df_do = criterion:backward(output, label) -- grad wrt the output of the networks
        df_dg = netD:updateGradInput(fake_AB, df_do):narrow(2,fake_AB:size(2)-output_nc+1, output_nc) -- update the gradients wrt the input
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     else
         errG = 0
     end
@@ -462,11 +341,7 @@ local fGx = function(x)
     -- unary loss
     local df_do_AE = torch.zeros(fake_B:size())
     if opt.gpu>0 then 
-<<<<<<< HEAD
       df_do_AE = df_do_AE:cuda();
-=======
-    	df_do_AE = df_do_AE:cuda();
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     end
     if opt.use_L1==1 then
        errL1 = criterionAE:forward(fake_B, real_B)
@@ -475,11 +350,7 @@ local fGx = function(x)
         errL1 = 0
     end
     
-<<<<<<< HEAD
-    netG:backward(real_A, df_dg:mul(opt.alpha) + df_do_AE:mul(opt.lambda))
-=======
     netG:backward(real_A, df_dg + df_do_AE:mul(opt.lambda))
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     
     return errG, gradParametersG
 end
@@ -496,10 +367,6 @@ paths.mkdir(opt.checkpoints_dir .. '/' .. opt.name)
 file = torch.DiskFile(paths.concat(opt.checkpoints_dir, opt.name, 'opt.txt'), 'w')
 file:writeObject(opt)
 file:close()
-<<<<<<< HEAD
-
-=======
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
 local counter = 0
 for epoch = 1, opt.niter do
     epoch_tm:reset()
@@ -508,16 +375,6 @@ for epoch = 1, opt.niter do
         
         -- load a batch and run G on that batch
         createRealFake()
-<<<<<<< HEAD
-        
-        -- (1) Update D network: maximize log(D(x,y)) + log(1 - D(x,G(x)))
-        if opt.use_GAN==1 then optim.adam(fDx, parametersD, optimStateD) end
-        
-        -- (2) Update G network: maximize log(D(x,G(x))) + L1(y,G(x))
-        optim.adam(fGx, parametersG, optimStateG)
-
-        -- display
-=======
         -- (1) Update D network: maximize log(D(x,y)) + log(1 - D(x,G(x)))
         if opt.use_GAN==1 then optim.adam(fDx, gradParametersD, optimStateD) end
         
@@ -527,7 +384,6 @@ for epoch = 1, opt.niter do
         -- display
         
         
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
         counter = counter + 1
         if counter % opt.display_freq == 0 and opt.display then
             createRealFake()
@@ -538,27 +394,13 @@ for epoch = 1, opt.niter do
                 disp.image(util.deprocessL_batch(real_A_s), {win=opt.display_id, title=opt.name .. ' input'})
                 disp.image(util.deprocessLAB_batch(real_A_s, fake_B_s), {win=opt.display_id+1, title=opt.name .. ' output'})
                 disp.image(util.deprocessLAB_batch(real_A_s, real_B_s), {win=opt.display_id+2, title=opt.name .. ' target'})
-<<<<<<< HEAD
-            else
-                --if (counter/opt.display_freq==1)  then
-                  --gen_out_old = netG:get(1).weight
-                  -- print("YESSSSSS")
-                -- optim.adam(fGx, parametersG, optimStateG)
-                --else
-                  --print(netG:get(1).weight)
-                  --gen_out_old = netG:get(1).weight
-                --end
-                disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id, title=opt.name .. ' input'})
-                disp.image(util.deprocess_batch(util.scaleBatch(fake_B:float(),100,100)), {win=opt.display_id+1, title=opt.name .. ' output'})
-                disp.image(util.deprocess_batch(util.scaleBatch(real_B:float(),100,100)), {win=opt.display_id+2, title=opt.name .. ' target'})
-=======
             else 
-            	  -- print(netG:get(8).output)
-				        -- if (counter/opt.display_freq==1)  then
-				        --   gen_out_old = netG:get(1).weight
-				        --   -- print("YESSSSSS")
-				        -- -- optim.adam(fGx, parametersG, optimStateG)
-				        -- else
+                -- print(netG:get(8).output)
+                -- if (counter/opt.display_freq==1)  then
+                --   gen_out_old = netG:get(1).weight
+                --   -- print("YESSSSSS")
+                -- -- optim.adam(fGx, parametersG, optimStateG)
+                -- else
                 n = torch.zeros(1,1,1,1)
                 -- local y = 1
                 -- local z = 1
@@ -576,7 +418,7 @@ for epoch = 1, opt.niter do
                 if opt.gpu>0 then 
                   n = n:cuda();
                 end
-				        if (counter/opt.display_freq==1)  then
+                if (counter/opt.display_freq==1)  then
                   print("Hello from the inside")
                   Generator_out = netG:forward({n, real_A})
                   Generator_out_f = Generator_out:float()
@@ -594,24 +436,23 @@ for epoch = 1, opt.niter do
                   b = Generator_out_f-gen_out_old
                   disp.image(util.scaleBatch(a,100,100),{win=opt.display_id, title=opt.name .. ' noise difference'})
                   disp.image(util.scaleBatch(b,100,100),{win=opt.display_id+1, title=opt.name .. ' Generator difference'})
-			            disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id+2, title=opt.name .. 'difference'})
+                  disp.image(util.scaleBatch(noise_out:float(),100,100),{win=opt.display_id+2, title=opt.name .. 'difference'})
                   noise_out_old = noise_out
                   gen_out_old = Generator_out_f
                 end
                 -- netOut = netG:get(63).output
                 -- noise_out = util.normalize(netOut:float())
                 -- print(noise_out:size())
-				          -- gen_out_old = netG:get(1).weight
-				        -- end  
-				        -- fake_AB = torch.cat(input,Generator_out,2)
-				        -- output = util.deprocess_batch(Generator_out)
-				        -- input = util.deprocess_batch(input):float()
-				        -- output = output:float()
-				        -- target = util.deprocess_batch(target):float()
-            	  disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id+3, title=opt.name .. ' input'})
+                  -- gen_out_old = netG:get(1).weight
+                -- end  
+                -- fake_AB = torch.cat(input,Generator_out,2)
+                -- output = util.deprocess_batch(Generator_out)
+                -- input = util.deprocess_batch(input):float()
+                -- output = output:float()
+                -- target = util.deprocess_batch(target):float()
+                disp.image(util.deprocess_batch(util.scaleBatch(real_A:float(),100,100)), {win=opt.display_id+3, title=opt.name .. ' input'})
                 disp.image(util.deprocess_batch(util.scaleBatch(fake_B:float(),100,100)), {win=opt.display_id+4, title=opt.name .. ' output'})
                 disp.image(util.deprocess_batch(util.scaleBatch(real_B:float(),100,100)), {win=opt.display_id+5, title=opt.name .. ' target'})
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
             end
         end
       
@@ -623,14 +464,8 @@ for epoch = 1, opt.niter do
             opt.serial_batch_iter=1
             
             local image_out = nil
-<<<<<<< HEAD
-            local N_save_display = 10 
-            local N_save_iter = torch.max(torch.Tensor({1, torch.floor(N_save_display/opt.batchSize)}))
-            for i3=1, N_save_iter do
-=======
             local N_save_display = 10
             for i3=1, torch.floor(N_save_display/opt.batchSize) do
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
             
                 createRealFake()
                 print('save to the disk')
@@ -651,11 +486,7 @@ for epoch = 1, opt.niter do
             opt.serial_batches=serial_batches
         end
         
-<<<<<<< HEAD
-        -- logging and display plot
-=======
         -- logging
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
         if counter % opt.print_freq == 0 then
             print(('Epoch: [%d][%8d / %8d]\t Time: %.3f  DataTime: %.3f  '
                     .. '  Err_G: %.4f  Err_D: %.4f  ErrL1: %.4f'):format(
@@ -675,13 +506,8 @@ for epoch = 1, opt.niter do
     end
     
     
-<<<<<<< HEAD
-    --parametersD, gradParametersD = nil, nil -- nil them to avoid spiking memory
-    --parametersG, gradParametersG = nil, nil
-=======
     parametersD, gradParametersD = nil, nil -- nil them to avoid spiking memory
     parametersG, gradParametersG = nil, nil
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4
     
     if epoch % opt.save_epoch_freq == 0 then
         torch.save(paths.concat(opt.checkpoints_dir, opt.name,  epoch .. '_net_G.t7'), netG:clearState())
@@ -690,14 +516,8 @@ for epoch = 1, opt.niter do
     
     print(('End of epoch %d / %d \t Time Taken: %.3f'):format(
             epoch, opt.niter, epoch_tm:time().real))
-<<<<<<< HEAD
-    --parametersD, gradParametersD = netD:getParameters() -- reflatten the params and get them
-    --parametersG, gradParametersG = netG:getParameters()
-end
-=======
     parametersD, gradParametersD = netD:getParameters() -- reflatten the params and get them
     parametersG, gradParametersG = netG:getParameters()
 
 
 end
->>>>>>> 2532dc7501654372bccd8211abea941492d18ca4

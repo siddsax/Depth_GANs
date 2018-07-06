@@ -13,3 +13,7 @@ datasets/
 results/
 z*
 *.zip
+*.txt
+nyu_test/
+nyu_toolbox/
+gdrive-linux-x64

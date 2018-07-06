@@ -12,7 +12,7 @@ require 'models'
 
 
 opt = {
-   DATA_ROOT = '',         -- path to images (should have subfolders 'train', 'val', etc)
+   DATA_ROOT = 'nyu_depth',         -- path to images (should have subfolders 'train', 'val', etc)
    batchSize = 1,          -- # images in batch
    loadSize = 286,         -- scale images to this size
    fineSize = 256,         --  then crop to this size
@@ -29,7 +29,7 @@ opt = {
    display_id = 10,        -- display window id.
    display_plot = 'errL1',    -- which loss values to plot over time. Accepted values include a comma seperated list of: errL1, errG, and errD
    gpu = 1,                -- gpu = 0 is CPU mode. gpu=X is GPU mode on GPU X
-   name = '',              -- name of the experiment, should generally be passed on the command line
+   name = 'test',              -- name of the experiment, should generally be passed on the command line
    which_direction = 'AtoB',    -- AtoB or BtoA
    phase = 'train',             -- train, val, test, etc
    preprocess = 'regular',      -- for special purpose preprocessing, e.g., for colorization, change this (selects preprocessing functions in util.lua)

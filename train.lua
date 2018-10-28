@@ -35,7 +35,7 @@ opt = {
    preprocess = 'regular',      -- for special purpose preprocessing, e.g., for colorization, change this (selects preprocessing functions in util.lua)
    nThreads = 2,                -- # threads for loading data
    save_epoch_freq = 100000,        -- save a model every save_epoch_freq epochs (does not overwrite previously saved models)
-   save_latest_freq = 50000,     -- save the latest model every latest_freq sgd iterations (overwrites the previous latest model)
+   save_latest_freq = 500,     -- save the latest model every latest_freq sgd iterations (overwrites the previous latest model)
    print_freq = 50,             -- print the debug information every print_freq iterations
    display_freq = 10,          -- display the current results every display_freq iterations
    save_display_freq = 50000,    -- save the current display of results every save_display_freq_iterations
@@ -415,4 +415,6 @@ for epoch = 1, opt.niter do
             epoch, opt.niter, epoch_tm:time().real))
     --parametersD, gradParametersD = netD:getParameters() -- reflatten the params and get them
     --parametersG, gradParametersG = netG:getParameters()
+
+    -- Test Error ---------------------------------------------------
 end
